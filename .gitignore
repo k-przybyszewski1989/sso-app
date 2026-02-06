@@ -29,3 +29,5 @@
 /coverage/
 /coverage.xml
 ###< code coverage ###
+
+config/reference.php
