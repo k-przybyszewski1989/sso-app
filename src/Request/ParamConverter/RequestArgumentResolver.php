@@ -15,68 +15,59 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final readonly class RequestArgumentResolver implements ValueResolverInterface
 {
-	public function __construct(
-		private SerializerInterface $serializer,
-		private ValidatorInterface $validator,
-		private LoggerInterface $logger,
-	) {
-	}
+    public function __construct(
+        private SerializerInterface $serializer,
+        private ValidatorInterface $validator,
+        private LoggerInterface $logger,
+    ) {
+    }
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * @return iterable<array-key, object>
-	 */
-	public function resolve(Request $request, ArgumentMetadata $argument): iterable
-	{
-		$type = $argument->getType();
+    /**
+     * @return iterable<array-key, object>
+     */
+    public function resolve(Request $request, ArgumentMetadata $argument): iterable
+    {
+        $type = $argument->getType();
 
-		if (false === \is_string($type) || (false === \class_exists($type) && false === \interface_exists($type)))
-		{
-			return [];
-		}
+        if (false === \is_string($type) || (false === \class_exists($type) && false === \interface_exists($type))) {
+            return [];
+        }
 
-		/** @var array<array-key, RequestTransform> $attributes */
-		$attributes = $argument->getAttributes(RequestTransform::class);
+        /** @var array<array-key, RequestTransform> $attributes */
+        $attributes = $argument->getAttributes(RequestTransform::class);
 
-		foreach ($attributes as $attribute)
-		{
-			yield $this->deserialize($attribute, $request, $type);
-		}
-	}
+        foreach ($attributes as $attribute) {
+            yield $this->deserialize($attribute, $request, $type);
+        }
+    }
 
-	/** @param class-string $class */
-	private function deserialize(RequestTransform $attribute, Request $request, string $class): object
-	{
-		try
-		{
-			$encoded = 'json' === $request->getContentTypeFormat() ?
-				(string) $request->getContent() :
-				(string) json_encode($request->request->all(), JSON_THROW_ON_ERROR);
+    /** @param class-string $class */
+    private function deserialize(RequestTransform $attribute, Request $request, string $class): object
+    {
+        try {
+            $encoded = 'json' === $request->getContentTypeFormat() ?
+                (string) $request->getContent() :
+                (string) json_encode($request->request->all(), JSON_THROW_ON_ERROR);
 
-			$object = $this->serializer->deserialize($encoded, $class, 'json');
-		}
-		catch (\Throwable $exception)
-		{
-			$this->logger->error('Request input deserialization exception', [
-				'exception' => $exception,
-			]);
+            $object = $this->serializer->deserialize($encoded, $class, 'json');
+        } catch (\Throwable $exception) {
+            $this->logger->error('Request input deserialization exception', [
+                'exception' => $exception,
+            ]);
 
-			$object = (new \ReflectionClass($class))->newInstanceWithoutConstructor();
-		}
+            $object = (new \ReflectionClass($class))->newInstanceWithoutConstructor();
+        }
 
-		if ($attribute->validate)
-		{
-			$violations = $this->getViolationListToArray($this->validator->validate($object));
+        if ($attribute->validate) {
+            $violations = $this->getViolationListToArray($this->validator->validate($object));
 
-			if (count($violations) > 0)
-			{
-				throw new RequestValidationException($violations);
-			}
-		}
+            if (count($violations) > 0) {
+                throw new RequestValidationException($violations);
+            }
+        }
 
-		return $object;
-	}
+        return $object;
+    }
 
     /**
      * @param ConstraintViolationListInterface<ConstraintViolationInterface> $violationList
@@ -88,8 +79,7 @@ final readonly class RequestArgumentResolver implements ValueResolverInterface
         $result = [];
 
         /** @var ConstraintViolationInterface $violation */
-        foreach ($violationList as $violation)
-        {
+        foreach ($violationList as $violation) {
             $result[] = [
                 'path' => $violation->getPropertyPath(),
                 'message' => (string) $violation->getMessage(),

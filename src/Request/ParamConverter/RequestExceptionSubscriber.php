@@ -12,24 +12,22 @@ use Symfony\Component\HttpKernel\KernelEvents;
 
 final readonly class RequestExceptionSubscriber implements EventSubscriberInterface
 {
-	/** {@inheritDoc} */
-	public static function getSubscribedEvents(): array
-	{
-		return [KernelEvents::EXCEPTION => 'onValidationException'];
-	}
+    public static function getSubscribedEvents(): array
+    {
+        return [KernelEvents::EXCEPTION => 'onValidationException'];
+    }
 
-	public function onValidationException(ExceptionEvent $event): void
-	{
-		$exception = $event->getThrowable();
+    public function onValidationException(ExceptionEvent $event): void
+    {
+        $exception = $event->getThrowable();
 
-		if (false === ($exception instanceof RequestValidationException))
-		{
-			return;
-		}
+        if (false === ($exception instanceof RequestValidationException)) {
+            return;
+        }
 
-		$event->setResponse(new JsonResponse(
-			$exception->getViolations(),
-			Response::HTTP_BAD_REQUEST,
-		));
-	}
+        $event->setResponse(new JsonResponse(
+            $exception->getViolations(),
+            Response::HTTP_BAD_REQUEST,
+        ));
+    }
 }

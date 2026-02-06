@@ -26,10 +26,11 @@ final class DevController extends AbstractController
 
     #[Route('/dev/pc', name: 'app_dev_paramconv', methods: ['POST'])]
     public function paramConv(
-        #[RequestTransform] TestRequest $request
-    ): Response
-    {
+        #[RequestTransform]
+        TestRequest $request,
+    ): Response {
         $d = new TestResponse('1', new \DateTimeImmutable());
+
         return new JsonResponse($d);
     }
 

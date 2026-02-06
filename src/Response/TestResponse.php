@@ -6,5 +6,7 @@ namespace App\Response;
 
 final readonly class TestResponse
 {
-    public function __construct(public string $name, public object $t) {}
+    public function __construct(public string $name, public object $t)
+    {
+    }
 }
