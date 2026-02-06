@@ -10,7 +10,8 @@
       "Bash(vendor/bin/phpstan analyse:*)",
       "Bash(composer cs-check:*)",
       "Bash(composer cs-fix:*)",
-      "Bash(composer analyze:*)"
+      "Bash(composer analyze:*)",
+      "Bash(php bin/console:*)"
     ]
   }
 }
