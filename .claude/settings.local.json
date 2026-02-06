@@ -4,7 +4,13 @@
       "Bash(php bin/console *)",
       "Bash(php bin/phpunit *)",
       "Bash(php bin/phpstan *)",
-      "Bash(php bin/phpcs *)"
+      "Bash(php bin/phpcs *)",
+      "Bash(composer require:*)",
+      "Bash(composer phpstan:*)",
+      "Bash(vendor/bin/phpstan analyse:*)",
+      "Bash(composer cs-check:*)",
+      "Bash(composer cs-fix:*)",
+      "Bash(composer analyze:*)"
     ]
   }
 }

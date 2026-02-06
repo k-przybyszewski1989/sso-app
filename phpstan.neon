@@ -1,0 +1,16 @@
+parameters:
+    level: 9
+    paths:
+        - src
+        - tests
+    excludePaths:
+        - tests/bootstrap.php
+        - var/*
+
+    # Symfony-specific settings
+    symfony:
+        containerXmlPath: var/cache/dev/App_KernelDevDebugContainer.xml
+
+    # Additional checks
+    reportUnmatchedIgnoredErrors: false
+    treatPhpDocTypesAsCertain: false
