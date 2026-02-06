@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(php bin/console *)",
+      "Bash(php bin/phpunit *)",
+      "Bash(php bin/phpstan *)",
+      "Bash(php bin/phpcs *)"
+    ]
+  }
+}

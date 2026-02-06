@@ -9,3 +9,9 @@
 
 controllers:
     resource: routing.controllers
+
+when@dev:
+    dev_controller:
+        resource: ../src/Controller/DevController.php
+        type: attribute
+        prefix: /
