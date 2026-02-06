@@ -1,4 +1,6 @@
 {
+    "name": "ai/sso-app",
+    "description": "Single Sign-On HTTP REST API application built with Symfony 8.0",
     "type": "project",
     "license": "proprietary",
     "minimum-stability": "stable",
