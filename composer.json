@@ -1,4 +1,6 @@
 {
+    "name": "ai/sso-app",
+    "description": "Single Sign-On HTTP REST API application built with Symfony 8.0",
     "type": "project",
     "license": "proprietary",
     "minimum-stability": "stable",
@@ -88,6 +90,8 @@
         "post-update-cmd": [
             "@auto-scripts"
         ],
+        "test": "phpunit",
+        "test:coverage": "phpunit --coverage-html coverage/",
         "phpstan": "phpstan analyse --memory-limit=1G",
         "phpstan:baseline": "phpstan analyse --memory-limit=1G --generate-baseline",
         "cs-check": "php-cs-fixer fix --dry-run --diff --verbose",
