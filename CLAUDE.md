@@ -52,7 +52,7 @@ This is a **specification-driven development toolkit** (SpecKit) that provides a
 
 - Use PSR-3
 - Log level guidance: warning for recoverable domain issues, error for failures, critical for data loss
-- Include correlation identifiers; avoid PII disclosure in log messages
+- Include correlation identifiers; avoid PII disclosure in log message
 
 ### Repository Pattern
 
@@ -70,7 +70,9 @@ This is a **specification-driven development toolkit** (SpecKit) that provides a
 
 ## Architecture
 
-- Keep controllers thin; move business logic into services
+- Keep controllers thin - move business logic into services
+- Never operate on HTTP Foundation requests directly – use DTOs instead (`RequestTransform::class`)
+- Request DTOs should be immutable, and sanitized properly before controller execution
 
 ## Implementation Guidance
 

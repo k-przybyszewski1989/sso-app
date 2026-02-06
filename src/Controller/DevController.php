@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Request\ParamConverter\RequestTransform;
+use App\Request\TestRequest;
+use App\Response\TestResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,6 +22,15 @@ final class DevController extends AbstractController
             'debug' => $this->getParameter('kernel.debug'),
             'message' => 'Development controller - available only in dev environment',
         ]);
+    }
+
+    #[Route('/dev/pc', name: 'app_dev_paramconv', methods: ['POST'])]
+    public function paramConv(
+        #[RequestTransform] TestRequest $request
+    ): Response
+    {
+        $d = new TestResponse('1', new \DateTimeImmutable());
+        return new JsonResponse($d);
     }
 
     #[Route('/dev/info', name: 'dev_info', methods: ['GET'])]
