@@ -11,7 +11,9 @@
       "Bash(composer cs-check:*)",
       "Bash(composer cs-fix:*)",
       "Bash(composer analyze:*)",
-      "Bash(php bin/console:*)"
+      "Bash(php bin/console:*)",
+      "Bash(composer validate:*)",
+      "Bash(composer test:*)"
     ]
   }
 }
