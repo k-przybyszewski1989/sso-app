@@ -17,7 +17,14 @@
       "Bash(git -C /Users/krzysztof.przybyszewski/Projects/ai/sso-app log feat/oauth2..master --oneline)",
       "Bash(git -C /Users/krzysztof.przybyszewski/Projects/ai/sso-app diff master..feat/oauth2 --name-status)",
       "Bash(git -C /Users/krzysztof.przybyszewski/Projects/ai/sso-app log feat/oauth2 --oneline)",
-      "Bash(git -C /Users/krzysztof.przybyszewski/Projects/ai/sso-app status)"
+      "Bash(git -C /Users/krzysztof.przybyszewski/Projects/ai/sso-app status)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nAdd PHPStan rule to enforce @inheritDoc annotations\n\nImplement custom PHPStan rule \\(InterfaceMethodDocRule\\) that enforces\n{@inheritDoc} annotations on all interface method implementations. This\nimproves code documentation by explicitly indicating when methods inherit\ntheir documentation from parent interfaces.\n\nChanges:\n- Add InterfaceMethodDocRule to validate interface method documentation\n- Add {@inheritDoc} annotations to all interface implementations \\(53 methods\\)\n- Configure php-cs-fixer to preserve @inheritDoc annotations\n- Register custom rule in phpstan.neon configuration\n\nAffected files:\n- All repository implementations \\(Doctrine*Repository classes\\)\n- Entity User \\(UserInterface, PasswordAuthenticatedUserInterface\\)\n- Request param converters \\(ValueResolverInterface, EventSubscriberInterface\\)\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(bin/console make:migration:*)",
+      "Bash(bin/console doctrine:migrations:migrate:*)",
+      "Bash(bin/console dbal:run-sql:*)",
+      "Bash(bin/console doctrine:schema:validate:*)",
+      "Bash(bin/console doctrine:migrations:status:*)"
     ]
   }
 }

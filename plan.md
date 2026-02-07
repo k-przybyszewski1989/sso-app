@@ -233,13 +233,13 @@ All DTOs: `final readonly class` with Symfony validation constraints
 - [x] `src/Repository/DoctrineAuthorizationCodeRepository.php` - Implements AuthorizationCodeRepositoryInterface
 - [x] `src/Repository/DoctrineScopeRepository.php` - Implements ScopeRepositoryInterface
 
-### Phase 4: Database Migrations
+### Phase 4: Database Migrations ✅
 
-- [ ] Generate migration: `bin/console make:migration`
+- [x] Generate migration: `bin/console make:migration`
     - Creates all 6 tables with proper columns, types, indexes, foreign keys
     - Run: `bin/console doctrine:migrations:migrate`
 
-- [ ] Create seed migration: `migrations/Version*_SeedScopes.php`
+- [x] Create seed migration: `migrations/Version*_SeedScopes.php`
     - Insert default scopes: openid, profile, email, offline_access
     - Run: `bin/console doctrine:migrations:migrate`
 
