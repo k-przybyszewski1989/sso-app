@@ -32,7 +32,7 @@ This is a **specification-driven development toolkit** (SpecKit) that provides a
 - DTOs: `*DTO` (e.g., `CancelPaymentIntentDTO`)
 - Enums: Use backed enums with string values (e.g., `enum PaymentType: string`)
 - Test classes and paths: `*Test` (e.g., `UserRepositoryTest`) and place them in `tests/` directory following the same structure as the source code
-- Test namespace: Use `Test\` prefix (e.g., `Test\App\Metrics`)
+- Test namespace: Use `App\Tests\` prefix (e.g., `App\Tests\Metrics`)
 
 ### Strict Typing
 

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Test\App\Request\ParamConverter;
+namespace App\Tests\Request\ParamConverter;
 
 use App\Request\ParamConverter\RequestArgumentResolver;
 use App\Request\ParamConverter\RequestTransform;
