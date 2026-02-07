@@ -243,42 +243,42 @@ All DTOs: `final readonly class` with Symfony validation constraints
     - Insert default scopes: openid, profile, email, offline_access
     - Run: `bin/console doctrine:migrations:migrate`
 
-### Phase 5: Core OAuth2 Services
+### Phase 5: Core OAuth2 Services ✅
 
 **Create service interfaces and implementations (`final readonly class`):**
 
-- [ ] `src/Service/OAuth2/TokenGeneratorServiceInterface.php` + `src/Service/OAuth2/TokenGeneratorService.php`
+- [x] `src/Service/OAuth2/TokenGeneratorServiceInterface.php` + `src/Service/OAuth2/TokenGeneratorService.php`
     - `generateAccessToken()` - 64 chars (32 bytes hex)
     - `generateRefreshToken()` - 64 chars
     - `generateAuthorizationCode()` - 32 chars (16 bytes hex)
     - `generateClientId()` - 32 chars
     - `generateClientSecret()` - 64 chars
 
-- [ ] `src/Service/OAuth2/PkceServiceInterface.php` + `src/Service/OAuth2/PkceService.php`
+- [x] `src/Service/OAuth2/PkceServiceInterface.php` + `src/Service/OAuth2/PkceService.php`
     - `validate(string $codeVerifier, string $codeChallenge, string $method)` - Supports 'plain' and 'S256'
 
-- [ ] `src/Service/OAuth2/ScopeValidationServiceInterface.php` + `src/Service/OAuth2/ScopeValidationService.php`
+- [x] `src/Service/OAuth2/ScopeValidationServiceInterface.php` + `src/Service/OAuth2/ScopeValidationService.php`
     - `validate(array $requestedScopes, array $allowedScopes): array` - Returns valid scopes or throws InvalidScopeException
     - Uses `ScopeRepository->findByIdentifiers()` to verify scopes exist
 
-- [ ] `src/Service/OAuth2/ClientAuthenticationServiceInterface.php` + `src/Service/OAuth2/ClientAuthenticationService.php`
+- [x] `src/Service/OAuth2/ClientAuthenticationServiceInterface.php` + `src/Service/OAuth2/ClientAuthenticationService.php`
     - `authenticate(?string $authHeader, ?string $clientId, ?string $clientSecret): OAuth2Client`
     - Supports Basic Auth (Authorization: Basic base64(clientId:clientSecret))
     - Falls back to POST body credentials
     - Verifies client secret with PasswordHasher
     - Throws InvalidClientException if invalid
 
-- [ ] `src/Service/OAuth2/AccessTokenServiceInterface.php` + `src/Service/OAuth2/AccessTokenService.php`
+- [x] `src/Service/OAuth2/AccessTokenServiceInterface.php` + `src/Service/OAuth2/AccessTokenService.php`
     - `createAccessToken(OAuth2Client $client, array $scopes, ?User $user): AccessToken` - Creates token with 1 hour expiration
     - `validateToken(string $token): AccessToken` - Validates and returns token or throws InvalidTokenException
     - `revokeToken(string $token): void` - Marks token as revoked
 
-- [ ] `src/Service/OAuth2/RefreshTokenServiceInterface.php` + `src/Service/OAuth2/RefreshTokenService.php`
+- [x] `src/Service/OAuth2/RefreshTokenServiceInterface.php` + `src/Service/OAuth2/RefreshTokenService.php`
     - `createRefreshToken(OAuth2Client $client, User $user, array $scopes): RefreshToken` - Creates token with 30 day expiration
     - `validateAndConsumeToken(string $token, OAuth2Client $client): RefreshToken` - Validates and revokes old token (rotation)
     - `revokeToken(string $token): void`
 
-- [ ] `src/Service/OAuth2/AuthorizationCodeServiceInterface.php` + `src/Service/OAuth2/AuthorizationCodeService.php`
+- [x] `src/Service/OAuth2/AuthorizationCodeServiceInterface.php` + `src/Service/OAuth2/AuthorizationCodeService.php`
     - `createAuthorizationCode(OAuth2Client $client, User $user, string $redirectUri, array $scopes, ?string $codeChallenge, ?string $codeChallengeMethod): AuthorizationCode` - Creates code with 10 min expiration
     - `validateAndConsumeCode(string $code, OAuth2Client $client, string $redirectUri, ?string $codeVerifier): AuthorizationCode` - Validates code, checks PKCE if present, marks as used
 

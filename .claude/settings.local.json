@@ -24,7 +24,8 @@
       "Bash(bin/console doctrine:migrations:migrate:*)",
       "Bash(bin/console dbal:run-sql:*)",
       "Bash(bin/console doctrine:schema:validate:*)",
-      "Bash(bin/console doctrine:migrations:status:*)"
+      "Bash(bin/console doctrine:migrations:status:*)",
+      "Bash(git commit:*)"
     ]
   }
 }
