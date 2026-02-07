@@ -16,11 +16,17 @@ final readonly class DoctrineOAuth2ClientRepository implements OAuth2ClientRepos
     ) {
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function findById(int $id): ?OAuth2Client
     {
         return $this->entityManager->find(OAuth2Client::class, $id);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getById(int $id, bool $lock = false): OAuth2Client
     {
         $client = $this->entityManager->find(
@@ -36,6 +42,9 @@ final readonly class DoctrineOAuth2ClientRepository implements OAuth2ClientRepos
         return $client;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function findByClientId(string $clientId): ?OAuth2Client
     {
         return $this->entityManager
@@ -43,6 +52,9 @@ final readonly class DoctrineOAuth2ClientRepository implements OAuth2ClientRepos
             ->findOneBy(['clientId' => $clientId]);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getByClientId(string $clientId, bool $lock = false): OAuth2Client
     {
         $query = $this->entityManager
@@ -68,6 +80,8 @@ final readonly class DoctrineOAuth2ClientRepository implements OAuth2ClientRepos
     }
 
     /**
+     * {@inheritDoc}
+     *
      * @return array<OAuth2Client>
      */
     public function findAll(): array
@@ -78,6 +92,8 @@ final readonly class DoctrineOAuth2ClientRepository implements OAuth2ClientRepos
     }
 
     /**
+     * {@inheritDoc}
+     *
      * @return array<OAuth2Client>
      */
     public function findActive(): array
@@ -87,12 +103,18 @@ final readonly class DoctrineOAuth2ClientRepository implements OAuth2ClientRepos
             ->findBy(['active' => true]);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function save(OAuth2Client $client): void
     {
         $this->entityManager->persist($client);
         $this->entityManager->flush();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function delete(OAuth2Client $client): void
     {
         $this->entityManager->remove($client);

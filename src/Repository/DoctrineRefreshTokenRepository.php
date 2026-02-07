@@ -18,6 +18,9 @@ final readonly class DoctrineRefreshTokenRepository implements RefreshTokenRepos
     ) {
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function findByToken(string $token): ?RefreshToken
     {
         return $this->entityManager
@@ -25,6 +28,9 @@ final readonly class DoctrineRefreshTokenRepository implements RefreshTokenRepos
             ->findOneBy(['token' => $token]);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getByToken(string $token, bool $lock = false): RefreshToken
     {
         $query = $this->entityManager
@@ -50,6 +56,8 @@ final readonly class DoctrineRefreshTokenRepository implements RefreshTokenRepos
     }
 
     /**
+     * {@inheritDoc}
+     *
      * @return array<RefreshToken>
      */
     public function findByUser(User $user): array
@@ -59,18 +67,27 @@ final readonly class DoctrineRefreshTokenRepository implements RefreshTokenRepos
             ->findBy(['user' => $user]);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function save(RefreshToken $token): void
     {
         $this->entityManager->persist($token);
         $this->entityManager->flush();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function delete(RefreshToken $token): void
     {
         $this->entityManager->remove($token);
         $this->entityManager->flush();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function deleteExpired(): int
     {
         $query = $this->entityManager
@@ -86,6 +103,9 @@ final readonly class DoctrineRefreshTokenRepository implements RefreshTokenRepos
         return $result;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function revokeAllForUser(User $user): int
     {
         $query = $this->entityManager

@@ -49,6 +49,10 @@ return (new PhpCsFixer\Config())
             'import_constants' => true,
             'import_functions' => true,
         ],
+        'no_superfluous_phpdoc_tags' => [
+            'allow_mixed' => true,
+            'remove_inheritdoc' => false,
+        ],
     ])
     ->setFinder($finder)
     ->setRiskyAllowed(true)

@@ -16,11 +16,17 @@ final readonly class DoctrineUserRepository implements UserRepositoryInterface
     ) {
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function findById(int $id): ?User
     {
         return $this->entityManager->find(User::class, $id);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getById(int $id, bool $lock = false): User
     {
         $user = $this->entityManager->find(
@@ -36,6 +42,9 @@ final readonly class DoctrineUserRepository implements UserRepositoryInterface
         return $user;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function findByEmail(string $email): ?User
     {
         return $this->entityManager
@@ -43,6 +52,9 @@ final readonly class DoctrineUserRepository implements UserRepositoryInterface
             ->findOneBy(['email' => $email]);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function findByUsername(string $username): ?User
     {
         return $this->entityManager
@@ -50,12 +62,18 @@ final readonly class DoctrineUserRepository implements UserRepositoryInterface
             ->findOneBy(['username' => $username]);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function save(User $user): void
     {
         $this->entityManager->persist($user);
         $this->entityManager->flush();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function delete(User $user): void
     {
         $this->entityManager->remove($user);

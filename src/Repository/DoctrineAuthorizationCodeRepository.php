@@ -17,6 +17,9 @@ final readonly class DoctrineAuthorizationCodeRepository implements Authorizatio
     ) {
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function findByCode(string $code): ?AuthorizationCode
     {
         return $this->entityManager
@@ -24,6 +27,9 @@ final readonly class DoctrineAuthorizationCodeRepository implements Authorizatio
             ->findOneBy(['code' => $code]);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getByCode(string $code, bool $lock = false): AuthorizationCode
     {
         $query = $this->entityManager
@@ -48,18 +54,27 @@ final readonly class DoctrineAuthorizationCodeRepository implements Authorizatio
         return $authorizationCode;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function save(AuthorizationCode $code): void
     {
         $this->entityManager->persist($code);
         $this->entityManager->flush();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function delete(AuthorizationCode $code): void
     {
         $this->entityManager->remove($code);
         $this->entityManager->flush();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function deleteExpired(): int
     {
         $query = $this->entityManager

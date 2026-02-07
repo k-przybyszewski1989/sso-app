@@ -12,7 +12,7 @@ use App\Exception\EntityNotFoundException;
 interface AccessTokenRepositoryInterface
 {
     /**
-     * Find access token by token string.
+     * Find an access token by token string.
      */
     public function findByToken(string $token): ?AccessToken;
 

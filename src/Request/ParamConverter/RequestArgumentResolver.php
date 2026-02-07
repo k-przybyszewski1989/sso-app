@@ -29,6 +29,8 @@ final readonly class RequestArgumentResolver implements ValueResolverInterface
     }
 
     /**
+     * {@inheritDoc}
+     *
      * @return iterable<array-key, object>
      */
     public function resolve(Request $request, ArgumentMetadata $argument): iterable

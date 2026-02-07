@@ -19,6 +19,9 @@ final readonly class DoctrineAccessTokenRepository implements AccessTokenReposit
     ) {
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function findByToken(string $token): ?AccessToken
     {
         return $this->entityManager
@@ -26,6 +29,9 @@ final readonly class DoctrineAccessTokenRepository implements AccessTokenReposit
             ->findOneBy(['token' => $token]);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getByToken(string $token, bool $lock = false): AccessToken
     {
         $query = $this->entityManager
@@ -51,6 +57,8 @@ final readonly class DoctrineAccessTokenRepository implements AccessTokenReposit
     }
 
     /**
+     * {@inheritDoc}
+     *
      * @return array<AccessToken>
      */
     public function findByUser(User $user): array
@@ -61,6 +69,8 @@ final readonly class DoctrineAccessTokenRepository implements AccessTokenReposit
     }
 
     /**
+     * {@inheritDoc}
+     *
      * @return array<AccessToken>
      */
     public function findByClient(OAuth2Client $client): array
@@ -70,18 +80,27 @@ final readonly class DoctrineAccessTokenRepository implements AccessTokenReposit
             ->findBy(['client' => $client]);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function save(AccessToken $token): void
     {
         $this->entityManager->persist($token);
         $this->entityManager->flush();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function delete(AccessToken $token): void
     {
         $this->entityManager->remove($token);
         $this->entityManager->flush();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function deleteExpired(): int
     {
         $query = $this->entityManager
@@ -97,6 +116,9 @@ final readonly class DoctrineAccessTokenRepository implements AccessTokenReposit
         return $result;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function revokeAllForUser(User $user): int
     {
         $query = $this->entityManager
@@ -118,6 +140,9 @@ final readonly class DoctrineAccessTokenRepository implements AccessTokenReposit
         return $result;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function revokeAllForClient(OAuth2Client $client): int
     {
         $query = $this->entityManager

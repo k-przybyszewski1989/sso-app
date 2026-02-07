@@ -14,3 +14,9 @@ parameters:
     # Additional checks
     reportUnmatchedIgnoredErrors: false
     treatPhpDocTypesAsCertain: false
+
+services:
+    -
+        class: App\PHPStan\Rules\InterfaceMethodDocRule
+        tags:
+            - phpstan.rules.rule

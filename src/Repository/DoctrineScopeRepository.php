@@ -16,11 +16,17 @@ final readonly class DoctrineScopeRepository implements ScopeRepositoryInterface
     ) {
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function findById(int $id): ?Scope
     {
         return $this->entityManager->find(Scope::class, $id);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getById(int $id, bool $lock = false): Scope
     {
         $scope = $this->entityManager->find(
@@ -36,6 +42,9 @@ final readonly class DoctrineScopeRepository implements ScopeRepositoryInterface
         return $scope;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function findByIdentifier(string $identifier): ?Scope
     {
         return $this->entityManager
@@ -43,6 +52,9 @@ final readonly class DoctrineScopeRepository implements ScopeRepositoryInterface
             ->findOneBy(['identifier' => $identifier]);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getByIdentifier(string $identifier, bool $lock = false): Scope
     {
         $query = $this->entityManager
@@ -68,6 +80,8 @@ final readonly class DoctrineScopeRepository implements ScopeRepositoryInterface
     }
 
     /**
+     * {@inheritDoc}
+     *
      * @return array<Scope>
      */
     public function findAll(): array
@@ -78,6 +92,8 @@ final readonly class DoctrineScopeRepository implements ScopeRepositoryInterface
     }
 
     /**
+     * {@inheritDoc}
+     *
      * @return array<Scope>
      */
     public function findDefaults(): array
@@ -88,6 +104,8 @@ final readonly class DoctrineScopeRepository implements ScopeRepositoryInterface
     }
 
     /**
+     * {@inheritDoc}
+     *
      * @param array<string> $identifiers
      * @return array<Scope>
      */
@@ -110,12 +128,18 @@ final readonly class DoctrineScopeRepository implements ScopeRepositoryInterface
         return $result;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function save(Scope $scope): void
     {
         $this->entityManager->persist($scope);
         $this->entityManager->flush();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function delete(Scope $scope): void
     {
         $this->entityManager->remove($scope);

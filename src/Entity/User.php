@@ -103,6 +103,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->username = $username;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getPassword(): string
     {
         return $this->password;
@@ -114,6 +117,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
+     * {@inheritDoc}
+     *
      * @return array<string>
      */
     public function getRoles(): array
@@ -188,6 +193,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
+     * {@inheritDoc}
+     *
      * @return non-empty-string
      */
     public function getUserIdentifier(): string
