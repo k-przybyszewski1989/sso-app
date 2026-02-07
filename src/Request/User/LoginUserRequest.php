@@ -12,7 +12,6 @@ final readonly class LoginUserRequest
         #[Assert\NotBlank]
         #[Assert\Email]
         public string $email,
-
         #[Assert\NotBlank]
         public string $password,
     ) {

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Request\ParamConverter;
 
 use Psr\Log\LoggerInterface;
+use ReflectionClass;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Controller\ValueResolverInterface;
 use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
@@ -12,6 +13,11 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Throwable;
+
+use function class_exists;
+use function interface_exists;
+use function is_string;
 
 final readonly class RequestArgumentResolver implements ValueResolverInterface
 {
@@ -29,7 +35,7 @@ final readonly class RequestArgumentResolver implements ValueResolverInterface
     {
         $type = $argument->getType();
 
-        if (false === \is_string($type) || (false === \class_exists($type) && false === \interface_exists($type))) {
+        if (false === is_string($type) || (false === class_exists($type) && false === interface_exists($type))) {
             return [];
         }
 
@@ -50,12 +56,12 @@ final readonly class RequestArgumentResolver implements ValueResolverInterface
                 (string) json_encode($request->request->all(), JSON_THROW_ON_ERROR);
 
             $object = $this->serializer->deserialize($encoded, $class, 'json');
-        } catch (\Throwable $exception) {
+        } catch (Throwable $exception) {
             $this->logger->error('Request input deserialization exception', [
                 'exception' => $exception,
             ]);
 
-            $object = (new \ReflectionClass($class))->newInstanceWithoutConstructor();
+            $object = (new ReflectionClass($class))->newInstanceWithoutConstructor();
         }
 
         if ($attribute->validate) {

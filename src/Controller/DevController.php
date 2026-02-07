@@ -7,6 +7,7 @@ namespace App\Controller;
 use App\Request\ParamConverter\RequestTransform;
 use App\Request\TestRequest;
 use App\Response\TestResponse;
+use DateTimeImmutable;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -29,7 +30,7 @@ final class DevController extends AbstractController
         #[RequestTransform]
         TestRequest $request,
     ): Response {
-        $d = new TestResponse('1', new \DateTimeImmutable());
+        $d = new TestResponse('1', new DateTimeImmutable());
 
         return new JsonResponse($d);
     }

@@ -12,12 +12,10 @@ final readonly class RegisterUserRequest
         #[Assert\NotBlank]
         #[Assert\Email]
         public string $email,
-
         #[Assert\NotBlank]
         #[Assert\Length(min: 3, max: 50)]
         #[Assert\Regex(pattern: '/^[a-zA-Z0-9_]+$/', message: 'Username can only contain letters, numbers, and underscores')]
         public string $username,
-
         #[Assert\NotBlank]
         #[Assert\Length(min: 8)]
         public string $password,

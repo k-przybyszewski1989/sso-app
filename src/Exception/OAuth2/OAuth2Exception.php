@@ -31,6 +31,9 @@ abstract class OAuth2Exception extends RuntimeException
         return $this->statusCode;
     }
 
+    /**
+     * @return array<string, string>
+     */
     public function toArray(): array
     {
         return [

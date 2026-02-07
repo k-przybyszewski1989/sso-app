@@ -12,19 +12,15 @@ final readonly class AuthorizationRequest
         #[Assert\NotBlank]
         #[Assert\Choice(choices: ['code'])]
         public string $responseType,
-
         #[Assert\NotBlank]
         public string $clientId,
-
         #[Assert\NotBlank]
         #[Assert\Url]
         public string $redirectUri,
-
         public ?string $scope = null,
         public ?string $state = null,
         public ?string $codeChallenge = null,
-
-        #[Assert\Choice(choices: ['plain', 'S256'], allowNull: true)]
+        #[Assert\Choice(choices: ['plain', 'S256'])]
         public ?string $codeChallengeMethod = null,
     ) {
     }

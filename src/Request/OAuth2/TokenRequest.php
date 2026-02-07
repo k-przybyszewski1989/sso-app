@@ -12,7 +12,6 @@ final readonly class TokenRequest
         #[Assert\NotBlank]
         #[Assert\Choice(choices: ['authorization_code', 'client_credentials', 'refresh_token'])]
         public string $grantType,
-
         public ?string $code = null,
         public ?string $redirectUri = null,
         public ?string $clientId = null,

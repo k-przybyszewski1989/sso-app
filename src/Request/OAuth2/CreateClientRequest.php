@@ -16,7 +16,6 @@ final readonly class CreateClientRequest
         #[Assert\NotBlank]
         #[Assert\Length(min: 3, max: 255)]
         public string $name,
-
         #[Assert\NotBlank]
         #[Assert\Count(min: 1)]
         #[Assert\All([
@@ -24,7 +23,6 @@ final readonly class CreateClientRequest
             new Assert\Url(),
         ])]
         public array $redirectUris,
-
         #[Assert\NotBlank]
         #[Assert\Count(min: 1)]
         #[Assert\All([
@@ -32,7 +30,6 @@ final readonly class CreateClientRequest
             new Assert\Choice(choices: ['authorization_code', 'client_credentials', 'refresh_token']),
         ])]
         public array $grantTypes,
-
         public bool $confidential = true,
         public ?string $description = null,
     ) {

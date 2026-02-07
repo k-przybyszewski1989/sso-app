@@ -180,34 +180,34 @@ All follow RFC 6749 error response format:
 
 All DTOs: `final readonly class` with Symfony validation constraints
 
-### Phase 2: Entity Model
+### Phase 2: Entity Model ✅
 
 **Create entities (all `final class` with Doctrine attributes):**
 
-- [ ] `src/Entity/User.php` - Implements `UserInterface` and `PasswordAuthenticatedUserInterface`
+- [x] `src/Entity/User.php` - Implements `UserInterface` and `PasswordAuthenticatedUserInterface`
     - Properties: id, email, username, password, roles[], enabled, createdAt, lastLoginAt
     - Relations: OneToMany to AccessToken, RefreshToken, AuthorizationCode
 
-- [ ] `src/Entity/OAuth2Client.php`
+- [x] `src/Entity/OAuth2Client.php`
     - Properties: id, clientId, clientSecretHash, name, description, redirectUris[], grantTypes[], allowedScopes[], confidential, active, createdAt, updatedAt
     - Relations: OneToMany to AccessToken, RefreshToken, AuthorizationCode
 
-- [ ] `src/Entity/AccessToken.php`
+- [x] `src/Entity/AccessToken.php`
     - Properties: id, token, client (ManyToOne), user (ManyToOne, nullable), scopes[], expiresAt, createdAt, revoked, revokedAt
     - Methods: `isExpired()`, `isValid()`
     - Indexes: token (unique), expires_at, (user_id, client_id) composite
 
-- [ ] `src/Entity/RefreshToken.php`
+- [x] `src/Entity/RefreshToken.php`
     - Properties: id, token, client (ManyToOne), user (ManyToOne), scopes[], expiresAt, createdAt, revoked, revokedAt
     - Methods: `isExpired()`, `isValid()`
     - Indexes: token (unique), expires_at
 
-- [ ] `src/Entity/AuthorizationCode.php`
+- [x] `src/Entity/AuthorizationCode.php`
     - Properties: id, code, client (ManyToOne), user (ManyToOne), redirectUri, scopes[], expiresAt, createdAt, used, usedAt, codeChallenge, codeChallengeMethod
     - Methods: `isExpired()`, `isValid()`
     - Indexes: code (unique), expires_at
 
-- [ ] `src/Entity/Scope.php`
+- [x] `src/Entity/Scope.php`
     - Properties: id, identifier, description, isDefault, createdAt
     - Index: identifier (unique)
 

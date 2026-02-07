@@ -26,11 +26,11 @@ final readonly class TokenResponse
             'expires_in' => $this->expiresIn,
         ];
 
-        if ($this->refreshToken !== null) {
+        if (null !== $this->refreshToken) {
             $data['refresh_token'] = $this->refreshToken;
         }
 
-        if ($this->scope !== null) {
+        if (null !== $this->scope) {
             $data['scope'] = $this->scope;
         }
 

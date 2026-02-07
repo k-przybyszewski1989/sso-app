@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Request\ParamConverter;
 
-final class RequestValidationException extends \InvalidArgumentException
+use InvalidArgumentException;
+
+final class RequestValidationException extends InvalidArgumentException
 {
     /** @param array<int, array{path: string, message: string}> $violations */
     public function __construct(private array $violations)

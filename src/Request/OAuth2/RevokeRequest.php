@@ -11,8 +11,7 @@ final readonly class RevokeRequest
     public function __construct(
         #[Assert\NotBlank]
         public string $token,
-
-        #[Assert\Choice(choices: ['access_token', 'refresh_token'], allowNull: true)]
+        #[Assert\Choice(choices: ['access_token', 'refresh_token'])]
         public ?string $tokenTypeHint = null,
     ) {
     }

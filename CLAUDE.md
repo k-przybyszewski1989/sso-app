@@ -21,6 +21,7 @@ This is a **specification-driven development toolkit** (SpecKit) that provides a
 - Service classes should be `final readonly class` when possible with the interface to be used for mocks in unit tests
 - Repository implementations should be `final readonly class Doctrine*Repository implements *Repository`
 - Request/DTO classes should be `final readonly class`
+- Entities classes should never be `final class`
 - Controllers should be `final class`
 - Test classes should be `final class` extending `TestCase`
 
@@ -33,6 +34,7 @@ This is a **specification-driven development toolkit** (SpecKit) that provides a
 - Enums: Use backed enums with string values (e.g., `enum PaymentType: string`)
 - Test classes and paths: `*Test` (e.g., `UserRepositoryTest`) and place them in `tests/` directory following the same structure as the source code
 - Test namespace: Use `App\Tests\` prefix (e.g., `App\Tests\Metrics`)
+- Abstract classes should always be prefixed with `Abstract` (e.g., `AbstractUserRepository`)
 
 ### Strict Typing
 
