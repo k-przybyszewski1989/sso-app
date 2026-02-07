@@ -211,27 +211,27 @@ All DTOs: `final readonly class` with Symfony validation constraints
     - Properties: id, identifier, description, isDefault, createdAt
     - Index: identifier (unique)
 
-### Phase 3: Repository Layer
+### Phase 3: Repository Layer ✅
 
 **Create repository interfaces (NO `declare(strict_types=1)` per project standards):**
 
-- [ ] `src/Repository/UserRepositoryInterface.php` - findById, getById, findByEmail, findByUsername, save, delete
-- [ ] `src/Repository/OAuth2ClientRepositoryInterface.php` - findById, getById, findByClientId, getByClientId, findAll, findActive, save, delete
-- [ ] `src/Repository/AccessTokenRepositoryInterface.php` - findByToken, getByToken, findByUser, findByClient, save, delete, deleteExpired, revokeAllForUser, revokeAllForClient
-- [ ] `src/Repository/RefreshTokenRepositoryInterface.php` - findByToken, getByToken, findByUser, save, delete, deleteExpired, revokeAllForUser
-- [ ] `src/Repository/AuthorizationCodeRepositoryInterface.php` - findByCode, getByCode, save, delete, deleteExpired
-- [ ] `src/Repository/ScopeRepositoryInterface.php` - findById, getById, findByIdentifier, getByIdentifier, findAll, findDefaults, findByIdentifiers, save, delete
+- [x] `src/Repository/UserRepositoryInterface.php` - findById, getById, findByEmail, findByUsername, save, delete
+- [x] `src/Repository/OAuth2ClientRepositoryInterface.php` - findById, getById, findByClientId, getByClientId, findAll, findActive, save, delete
+- [x] `src/Repository/AccessTokenRepositoryInterface.php` - findByToken, getByToken, findByUser, findByClient, save, delete, deleteExpired, revokeAllForUser, revokeAllForClient
+- [x] `src/Repository/RefreshTokenRepositoryInterface.php` - findByToken, getByToken, findByUser, save, delete, deleteExpired, revokeAllForUser
+- [x] `src/Repository/AuthorizationCodeRepositoryInterface.php` - findByCode, getByCode, save, delete, deleteExpired
+- [x] `src/Repository/ScopeRepositoryInterface.php` - findById, getById, findByIdentifier, getByIdentifier, findAll, findDefaults, findByIdentifiers, save, delete
 
 **Create Doctrine implementations (`final readonly class`):**
 
-- [ ] `src/Repository/DoctrineUserRepository.php` - Implements UserRepositoryInterface
-- [ ] `src/Repository/DoctrineOAuth2ClientRepository.php` - Implements OAuth2ClientRepositoryInterface
-- [ ] `src/Repository/DoctrineAccessTokenRepository.php` - Implements AccessTokenRepositoryInterface
+- [x] `src/Repository/DoctrineUserRepository.php` - Implements UserRepositoryInterface
+- [x] `src/Repository/DoctrineOAuth2ClientRepository.php` - Implements OAuth2ClientRepositoryInterface
+- [x] `src/Repository/DoctrineAccessTokenRepository.php` - Implements AccessTokenRepositoryInterface
     - Use `LockMode::PESSIMISTIC_WRITE` for locking
     - `deleteExpired()` uses QueryBuilder DELETE with timestamp filter
-- [ ] `src/Repository/DoctrineRefreshTokenRepository.php` - Implements RefreshTokenRepositoryInterface
-- [ ] `src/Repository/DoctrineAuthorizationCodeRepository.php` - Implements AuthorizationCodeRepositoryInterface
-- [ ] `src/Repository/DoctrineScopeRepository.php` - Implements ScopeRepositoryInterface
+- [x] `src/Repository/DoctrineRefreshTokenRepository.php` - Implements RefreshTokenRepositoryInterface
+- [x] `src/Repository/DoctrineAuthorizationCodeRepository.php` - Implements AuthorizationCodeRepositoryInterface
+- [x] `src/Repository/DoctrineScopeRepository.php` - Implements ScopeRepositoryInterface
 
 ### Phase 4: Database Migrations
 
