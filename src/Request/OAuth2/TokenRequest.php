@@ -19,6 +19,7 @@ final readonly class TokenRequest
         public ?string $refreshToken = null,
         public ?string $scope = null,
         public ?string $codeVerifier = null,
+        public ?string $authorizationHeader = null,
     ) {
     }
 }

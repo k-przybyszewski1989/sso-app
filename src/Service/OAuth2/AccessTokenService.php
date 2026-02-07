@@ -13,7 +13,7 @@ use DateTimeImmutable;
 
 final readonly class AccessTokenService implements AccessTokenServiceInterface
 {
-    private const TOKEN_LIFETIME_SECONDS = 3600; // 1 hour
+    private const int TOKEN_LIFETIME_SECONDS = 3600; // 1 hour
 
     public function __construct(
         private AccessTokenRepositoryInterface $accessTokenRepository,

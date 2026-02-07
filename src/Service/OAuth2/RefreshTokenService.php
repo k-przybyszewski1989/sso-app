@@ -9,11 +9,12 @@ use App\Entity\RefreshToken;
 use App\Entity\User;
 use App\Exception\OAuth2\InvalidGrantException;
 use App\Repository\RefreshTokenRepositoryInterface;
+use DateMalformedStringException;
 use DateTimeImmutable;
 
 final readonly class RefreshTokenService implements RefreshTokenServiceInterface
 {
-    private const TOKEN_LIFETIME_SECONDS = 2592000; // 30 days
+    private const int TOKEN_LIFETIME_SECONDS = 2592000; // 30 days
 
     public function __construct(
         private RefreshTokenRepositoryInterface $refreshTokenRepository,
@@ -21,7 +22,9 @@ final readonly class RefreshTokenService implements RefreshTokenServiceInterface
     ) {
     }
 
-    /** {@inheritDoc} */
+    /** {@inheritDoc}
+     * @throws DateMalformedStringException
+     */
     public function createRefreshToken(OAuth2Client $client, User $user, array $scopes): RefreshToken
     {
         $expiresAt = new DateTimeImmutable(sprintf('+%d seconds', self::TOKEN_LIFETIME_SECONDS));

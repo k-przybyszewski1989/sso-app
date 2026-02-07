@@ -282,20 +282,20 @@ All DTOs: `final readonly class` with Symfony validation constraints
     - `createAuthorizationCode(OAuth2Client $client, User $user, string $redirectUri, array $scopes, ?string $codeChallenge, ?string $codeChallengeMethod): AuthorizationCode` - Creates code with 10 min expiration
     - `validateAndConsumeCode(string $code, OAuth2Client $client, string $redirectUri, ?string $codeVerifier): AuthorizationCode` - Validates code, checks PKCE if present, marks as used
 
-### Phase 6: Grant Handlers
+### Phase 6: Grant Handlers ✅
 
-- [ ] `src/Service/OAuth2/Grant/GrantHandlerInterface.php`
+- [x] `src/Service/OAuth2/Grant/GrantHandlerInterface.php`
     - `supports(string $grantType): bool`
     - `handle(TokenRequest $request): TokenResponse`
 
-- [ ] `src/Service/OAuth2/Grant/ClientCredentialsGrantHandler.php` (implements GrantHandlerInterface)
+- [x] `src/Service/OAuth2/Grant/ClientCredentialsGrantHandler.php` (implements GrantHandlerInterface)
     - Authenticates client
     - Validates grant type allowed for client
     - Validates scopes
     - Creates access token (no user, no refresh token)
     - Returns TokenResponse
 
-- [ ] `src/Service/OAuth2/Grant/AuthorizationCodeGrantHandler.php` (implements GrantHandlerInterface)
+- [x] `src/Service/OAuth2/Grant/AuthorizationCodeGrantHandler.php` (implements GrantHandlerInterface)
     - Authenticates client
     - Validates grant type allowed
     - Validates and consumes authorization code (includes PKCE check)
@@ -303,7 +303,7 @@ All DTOs: `final readonly class` with Symfony validation constraints
     - Creates refresh token if 'offline_access' scope present
     - Returns TokenResponse
 
-- [ ] `src/Service/OAuth2/Grant/RefreshTokenGrantHandler.php` (implements GrantHandlerInterface)
+- [x] `src/Service/OAuth2/Grant/RefreshTokenGrantHandler.php` (implements GrantHandlerInterface)
     - Authenticates client
     - Validates grant type allowed
     - Validates and consumes refresh token (rotation)
@@ -312,7 +312,7 @@ All DTOs: `final readonly class` with Symfony validation constraints
     - Creates new refresh token
     - Returns TokenResponse
 
-- [ ] `src/Service/OAuth2/OAuth2ServiceInterface.php` + `src/Service/OAuth2/OAuth2Service.php`
+- [x] `src/Service/OAuth2/OAuth2ServiceInterface.php` + `src/Service/OAuth2/OAuth2Service.php`
     - Receives iterable of GrantHandlerInterface (tagged services)
     - `issueToken(TokenRequest $request): TokenResponse` - Delegates to appropriate grant handler
     - Throws UnsupportedGrantTypeException if no handler supports grant type

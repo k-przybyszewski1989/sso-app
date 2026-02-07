@@ -4,8 +4,10 @@ parameters:
         - src
         - tests
     excludePaths:
+        - src/Kernel.php
         - tests/bootstrap.php
         - var/*
+        - vendor/*
 
     # Symfony-specific settings
     symfony:
@@ -18,5 +20,9 @@ parameters:
 services:
     -
         class: App\PHPStan\Rules\InterfaceMethodDocRule
+        tags:
+            - phpstan.rules.rule
+    -
+        class: App\PHPStan\Rules\TypedConstantRule
         tags:
             - phpstan.rules.rule

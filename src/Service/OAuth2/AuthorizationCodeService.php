@@ -14,7 +14,7 @@ use DateTimeImmutable;
 
 final readonly class AuthorizationCodeService implements AuthorizationCodeServiceInterface
 {
-    private const CODE_LIFETIME_SECONDS = 600; // 10 minutes
+    private const int CODE_LIFETIME_SECONDS = 600; // 10 minutes
 
     public function __construct(
         private AuthorizationCodeRepositoryInterface $authorizationCodeRepository,
