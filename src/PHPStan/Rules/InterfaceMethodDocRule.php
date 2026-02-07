@@ -41,16 +41,58 @@ final readonly class InterfaceMethodDocRule implements Rule
         }
 
         // Skip if method doesn't implement an interface method
-        if (!$this->implementsInterfaceMethod($classReflection, $methodReflection->getName())) {
+        $interfaceMethod = $this->getInterfaceMethod($classReflection, $methodReflection->getName(), $scope);
+        if (null === $interfaceMethod) {
             return [];
         }
 
+        // Check if interface method has a docblock
+        $interfaceDocComment = $interfaceMethod['reflection']->getDocComment();
+        $interfaceHasDocblock = null !== $interfaceDocComment && '' !== trim($interfaceDocComment);
+
+        if (!$interfaceHasDocblock) {
+            // Interface method is missing a docblock - check if implementation has redundant {@inheritDoc}
+            $originalNode = $node->getOriginalNode();
+            if (!$originalNode instanceof ClassMethod) {
+                return [];
+            }
+
+            $docComment = $originalNode->getDocComment();
+            if (null !== $docComment) {
+                $docText = $docComment->getText();
+                if (str_contains($docText, '@inheritDoc') || str_contains($docText, '{@inheritDoc}')) {
+                    return [
+                        RuleErrorBuilder::message(sprintf(
+                            'Method %s::%s() has redundant {@inheritDoc} annotation as interface method %s::%s() has no documentation.',
+                            $classReflection->getName(),
+                            $methodReflection->getName(),
+                            $interfaceMethod['interface']->getName(),
+                            $methodReflection->getName()
+                        ))
+                        ->identifier('redundantInheritDoc')
+                        ->build(),
+                    ];
+                }
+            }
+
+            // Report interface missing docblock
+            return [
+                RuleErrorBuilder::message(sprintf(
+                    'Interface method %s::%s() is missing a docblock.',
+                    $interfaceMethod['interface']->getName(),
+                    $methodReflection->getName()
+                ))
+                ->identifier('missingInterfaceDocblock')
+                ->build(),
+            ];
+        }
+
+        // Interface has docblock, check if implementation has {@inheritDoc}
         $originalNode = $node->getOriginalNode();
         if (!$originalNode instanceof ClassMethod) {
             return [];
         }
 
-        // Check if docblock contains {@inheritDoc}
         $docComment = $originalNode->getDocComment();
         if (null === $docComment) {
             return [
@@ -80,14 +122,20 @@ final readonly class InterfaceMethodDocRule implements Rule
         return [];
     }
 
-    private function implementsInterfaceMethod(ClassReflection $classReflection, string $methodName): bool
+    /**
+     * @return array{interface: ClassReflection, reflection: \PHPStan\Reflection\MethodReflection}|null
+     */
+    private function getInterfaceMethod(ClassReflection $classReflection, string $methodName, Scope $scope): ?array
     {
         foreach ($classReflection->getInterfaces() as $interface) {
             if ($interface->hasMethod($methodName)) {
-                return true;
+                return [
+                    'interface' => $interface,
+                    'reflection' => $interface->getMethod($methodName, $scope),
+                ];
             }
         }
 
-        return false;
+        return null;
     }
 }

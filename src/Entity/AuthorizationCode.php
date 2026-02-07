@@ -140,6 +140,11 @@ class AuthorizationCode
         return $this->usedAt;
     }
 
+    public function setUsedAt(?DateTimeImmutable $usedAt): void
+    {
+        $this->usedAt = $usedAt;
+    }
+
     public function getCodeChallenge(): ?string
     {
         return $this->codeChallenge;

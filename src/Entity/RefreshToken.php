@@ -124,6 +124,11 @@ class RefreshToken
         return $this->revokedAt;
     }
 
+    public function setRevokedAt(?DateTimeImmutable $revokedAt): void
+    {
+        $this->revokedAt = $revokedAt;
+    }
+
     public function isExpired(): bool
     {
         return $this->expiresAt < new DateTimeImmutable();

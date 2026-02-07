@@ -8,12 +8,13 @@ use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'oauth2_client')]
 #[ORM\Index(columns: ['client_id'], name: 'idx_oauth2_client_client_id')]
 #[ORM\Index(columns: ['active'], name: 'idx_oauth2_client_active')]
-class OAuth2Client
+class OAuth2Client implements PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -249,5 +250,11 @@ class OAuth2Client
     public function getAuthorizationCodes(): Collection
     {
         return $this->authorizationCodes;
+    }
+
+    /** {@inheritDoc} */
+    public function getPassword(): string
+    {
+        return $this->clientSecretHash;
     }
 }
