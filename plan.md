@@ -152,31 +152,31 @@ All follow RFC 6749 error response format:
 
 ## Implementation Plan
 
-### Phase 1: Exceptions and DTOs (Foundation)
+### Phase 1: Exceptions and DTOs (Foundation) ✅
 
 **Create exception hierarchy:**
-- [ ] `src/Exception/OAuth2/OAuth2Exception.php` - Base exception with error code and status
-- [ ] `src/Exception/OAuth2/InvalidClientException.php`
-- [ ] `src/Exception/OAuth2/InvalidGrantException.php`
-- [ ] `src/Exception/OAuth2/InvalidRequestException.php`
-- [ ] `src/Exception/OAuth2/InvalidScopeException.php`
-- [ ] `src/Exception/OAuth2/InvalidTokenException.php`
-- [ ] `src/Exception/OAuth2/UnsupportedGrantTypeException.php`
-- [ ] `src/Exception/OAuth2/UnauthorizedClientException.php`
-- [ ] `src/Exception/EntityNotFoundException.php` - General entity not found exception
+- [x] `src/Exception/OAuth2/OAuth2Exception.php` - Base exception with error code and status
+- [x] `src/Exception/OAuth2/InvalidClientException.php`
+- [x] `src/Exception/OAuth2/InvalidGrantException.php`
+- [x] `src/Exception/OAuth2/InvalidRequestException.php`
+- [x] `src/Exception/OAuth2/InvalidScopeException.php`
+- [x] `src/Exception/OAuth2/InvalidTokenException.php`
+- [x] `src/Exception/OAuth2/UnsupportedGrantTypeException.php`
+- [x] `src/Exception/OAuth2/UnauthorizedClientException.php`
+- [x] `src/Exception/EntityNotFoundException.php` - General entity not found exception
 
 **Create response DTOs:**
-- [ ] `src/Response/OAuth2/TokenResponse.php` - Token endpoint response
-- [ ] `src/Response/User/UserResponse.php` - User profile response
+- [x] `src/Response/OAuth2/TokenResponse.php` - Token endpoint response
+- [x] `src/Response/User/UserResponse.php` - User profile response
 
 **Create request DTOs:**
-- [ ] `src/Request/OAuth2/TokenRequest.php` - Token endpoint (grant_type, code, client credentials, etc.)
-- [ ] `src/Request/OAuth2/AuthorizationRequest.php` - Authorization endpoint (response_type, client_id, redirect_uri, scope, state, PKCE)
-- [ ] `src/Request/OAuth2/RevokeRequest.php` - Revoke endpoint (token, token_type_hint)
-- [ ] `src/Request/OAuth2/IntrospectRequest.php` - Introspect endpoint (token)
-- [ ] `src/Request/OAuth2/CreateClientRequest.php` - Client creation (name, redirect_uris, grant_types)
-- [ ] `src/Request/User/RegisterUserRequest.php` - User registration (email, username, password)
-- [ ] `src/Request/User/LoginUserRequest.php` - User login (email, password)
+- [x] `src/Request/OAuth2/TokenRequest.php` - Token endpoint (grant_type, code, client credentials, etc.)
+- [x] `src/Request/OAuth2/AuthorizationRequest.php` - Authorization endpoint (response_type, client_id, redirect_uri, scope, state, PKCE)
+- [x] `src/Request/OAuth2/RevokeRequest.php` - Revoke endpoint (token, token_type_hint)
+- [x] `src/Request/OAuth2/IntrospectRequest.php` - Introspect endpoint (token)
+- [x] `src/Request/OAuth2/CreateClientRequest.php` - Client creation (name, redirect_uris, grant_types)
+- [x] `src/Request/User/RegisterUserRequest.php` - User registration (email, username, password)
+- [x] `src/Request/User/LoginUserRequest.php` - User login (email, password)
 
 All DTOs: `final readonly class` with Symfony validation constraints
 
