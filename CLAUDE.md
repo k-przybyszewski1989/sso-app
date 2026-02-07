@@ -276,3 +276,8 @@ Feature branches are created automatically by the workflow. The branch name form
 - `short-name` is a 2-4 word action-noun format (e.g., "user-auth", "oauth2-api-integration")
 
 The workflow checks all three sources (remote branches, local branches, spec directories) to ensure consistent numbering.
+
+## Plan mode
+- Always use checklist as a format of steps to be done to track progress
+- Always save the plan into plan.md file
+- Always use markdown format for plan

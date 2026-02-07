@@ -13,7 +13,11 @@
       "Bash(composer analyze:*)",
       "Bash(php bin/console:*)",
       "Bash(composer validate:*)",
-      "Bash(composer test:*)"
+      "Bash(composer test:*)",
+      "Bash(git -C /Users/krzysztof.przybyszewski/Projects/ai/sso-app log feat/oauth2..master --oneline)",
+      "Bash(git -C /Users/krzysztof.przybyszewski/Projects/ai/sso-app diff master..feat/oauth2 --name-status)",
+      "Bash(git -C /Users/krzysztof.przybyszewski/Projects/ai/sso-app log feat/oauth2 --oneline)",
+      "Bash(git -C /Users/krzysztof.przybyszewski/Projects/ai/sso-app status)"
     ]
   }
 }
