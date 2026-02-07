@@ -8,7 +8,7 @@ $finder = (new PhpCsFixer\Finder())
     ->exclude('vendor')
     ->exclude('node_modules')
     ->notPath('src/Kernel.php')
-    ->notPath('config/reference.php')
+    ->notPath('config/')
 ;
 
 return (new PhpCsFixer\Config())
