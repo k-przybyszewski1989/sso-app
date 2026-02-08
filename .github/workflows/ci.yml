@@ -57,6 +57,13 @@ jobs:
           key: phpunit-${{ github.sha }}
           restore-keys: phpunit-
 
+      - name: Setup database schema
+        run: |
+          php bin/console doctrine:database:create --env=test --if-not-exists
+          php bin/console doctrine:schema:create --env=test
+        env:
+          DATABASE_URL: "mysql://root:!ChangeMe!@127.0.0.1:3306/app?serverVersion=11.2.2-MariaDB&charset=utf8mb4"
+
       - name: Run unit tests
         run: vendor/bin/phpunit --testdox
         env:
@@ -174,6 +181,13 @@ jobs:
 
       - name: Install dependencies
         run: composer install --no-progress --no-interaction --prefer-dist --optimize-autoloader
+
+      - name: Setup database schema
+        run: |
+          php bin/console doctrine:database:create --env=test --if-not-exists
+          php bin/console doctrine:schema:create --env=test
+        env:
+          DATABASE_URL: "mysql://root:!ChangeMe!@127.0.0.1:3306/app?serverVersion=11.2.2-MariaDB&charset=utf8mb4"
 
       - name: Run tests with coverage
         run: vendor/bin/phpunit --coverage-html coverage/ --coverage-clover coverage.xml
