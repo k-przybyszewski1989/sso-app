@@ -91,6 +91,7 @@ This is a **specification-driven development toolkit** (SpecKit) that provides a
 - Use PHPDoc for typing only - avoid unnecessary comments explaining what a method does (this should be part of the function name instead)
 - Always use the `JSON_THROW_ON_ERROR` flag when encoding/decoding JSON strings
 - Always use `yoda_style` comparisons
+- Always use `#[AllowMockObjectsWithoutExpectations]` attribute on test classes
 
 ## File Scaffolding Checklist (per class type)
 

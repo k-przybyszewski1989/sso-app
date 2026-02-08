@@ -10,6 +10,7 @@ use App\Entity\User;
 use App\EventListener\ScopeAuthorizationListener;
 use App\Security\Attribute\RequireScope;
 use DateTimeImmutable;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,6 +20,7 @@ use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 
+#[AllowMockObjectsWithoutExpectations]
 final class ScopeAuthorizationListenerTest extends TestCase
 {
     public function testGetSubscribedEventsReturnsCorrectMapping(): void
@@ -37,17 +39,18 @@ final class ScopeAuthorizationListenerTest extends TestCase
 
         $kernel = $this->createMock(HttpKernelInterface::class);
         $request = new Request();
+        $closureController = fn () => 'response';
         $event = new ControllerEvent(
             $kernel,
-            fn () => 'response', // Closure controller
+            $closureController,
             $request,
             HttpKernelInterface::MAIN_REQUEST
         );
 
         $listener->onKernelController($event);
 
-        // No exception thrown means the test passed
-        $this->assertTrue(true);
+        // Event controller should remain unchanged
+        $this->assertSame($closureController, $event->getController());
     }
 
     public function testOnKernelControllerDoesNothingWhenNoRequiredScopes(): void
@@ -109,7 +112,7 @@ final class ScopeAuthorizationListenerTest extends TestCase
 
         // Controller should be replaced with forbidden response
         $newController = $event->getController();
-        $this->assertIsCallable($newController);
+        $this->assertNotSame([$controller, 'action'], $newController);
 
         $response = $newController();
         $this->assertInstanceOf(\Symfony\Component\HttpFoundation\JsonResponse::class, $response);
@@ -157,7 +160,7 @@ final class ScopeAuthorizationListenerTest extends TestCase
 
         // Controller should be replaced with forbidden response
         $newController = $event->getController();
-        $this->assertIsCallable($newController);
+        $this->assertNotSame([$controller, 'action'], $newController);
 
         $response = $newController();
         $this->assertInstanceOf(\Symfony\Component\HttpFoundation\JsonResponse::class, $response);
@@ -213,6 +216,7 @@ final class ScopeAuthorizationListenerTest extends TestCase
                     $provided = $context['provided'] ?? [];
                     $this->assertIsArray($required);
                     $this->assertIsArray($provided);
+
                     return in_array('admin', $required, true)
                         && in_array('write', $required, true)
                         && in_array('read', $provided, true);
@@ -223,7 +227,7 @@ final class ScopeAuthorizationListenerTest extends TestCase
 
         // Should replace controller with forbidden response
         $newController = $event->getController();
-        $this->assertIsCallable($newController);
+        $this->assertNotSame([$controller, 'action'], $newController);
 
         $response = $newController();
         $this->assertInstanceOf(\Symfony\Component\HttpFoundation\JsonResponse::class, $response);
