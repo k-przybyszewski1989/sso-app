@@ -60,7 +60,7 @@ jobs:
       - name: Run unit tests
         run: vendor/bin/phpunit --testdox
         env:
-          DATABASE_URL: "mysql://root:!ChangeMe!@127.0.0.1:3306/app_test?serverVersion=11.2.2-MariaDB&charset=utf8mb4"
+          DATABASE_URL: "mysql://root:!ChangeMe!@127.0.0.1:3306/app?serverVersion=11.2.2-MariaDB&charset=utf8mb4"
 
   phpstan:
     name: Static Analysis (PHPStan)
@@ -178,7 +178,7 @@ jobs:
       - name: Run tests with coverage
         run: vendor/bin/phpunit --coverage-html coverage/ --coverage-clover coverage.xml
         env:
-          DATABASE_URL: "mysql://root:!ChangeMe!@127.0.0.1:3306/app_test?serverVersion=11.2.2-MariaDB&charset=utf8mb4"
+          DATABASE_URL: "mysql://root:!ChangeMe!@127.0.0.1:3306/app?serverVersion=11.2.2-MariaDB&charset=utf8mb4"
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v4
