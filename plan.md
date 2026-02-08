@@ -355,20 +355,20 @@ All DTOs: `final readonly class` with Symfony validation constraints
     - Validates current token has required scopes
     - Returns 403 JsonResponse if insufficient scopes
 
-### Phase 10: Controllers
+### Phase 10: Controllers ✅
 
-- [ ] `src/Controller/OAuth2Controller.php` (`final class`)
+- [x] `src/Controller/OAuth2Controller.php` (`final class`)
     - `POST /oauth2/authorize` - `authorize(AuthorizationRequest)` - Creates auth code, returns as JSON
     - `POST /oauth2/token` - `token(TokenRequest)` - Delegates to OAuth2Service, returns TokenResponse
     - `POST /oauth2/revoke` - `revoke(RevokeRequest)` - Revokes access/refresh token, returns 200
     - `POST /oauth2/introspect` - `introspect(IntrospectRequest)` - Returns token metadata or {active: false}
 
-- [ ] `src/Controller/UserController.php` (`final class`)
+- [x] `src/Controller/UserController.php` (`final class`)
     - `POST /api/users/register` - `register(RegisterUserRequest)` - Creates user, returns UserResponse
     - `POST /api/users/login` - `login(LoginUserRequest)` - Authenticates user, creates access token, returns TokenResponse
     - `GET /api/users/me` - `me()` - Returns current authenticated user (uses OAuth2Authenticator)
 
-- [ ] `src/Controller/ClientController.php` (`final class`)
+- [x] `src/Controller/ClientController.php` (`final class`)
     - `GET /api/clients` - `list()` - Returns all clients (admin only)
     - `POST /api/clients` - `create(CreateClientRequest)` - Creates client, returns client_id and client_secret (admin only)
     - `DELETE /api/clients/{clientId}` - `delete(string $clientId)` - Deletes client (admin only)
