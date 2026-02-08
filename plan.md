@@ -335,9 +335,9 @@ All DTOs: `final readonly class` with Symfony validation constraints
 
 - [x] `src/Exception/InvalidCredentialsException.php` - Exception for invalid authentication
 
-### Phase 8: Client Management Service
+### Phase 8: Client Management Service ✅
 
-- [ ] `src/Service/OAuth2/ClientManagementServiceInterface.php` + `src/Service/OAuth2/ClientManagementService.php`
+- [x] `src/Service/OAuth2/ClientManagementServiceInterface.php` + `src/Service/OAuth2/ClientManagementService.php`
     - `createClient(string $name, array $redirectUris, array $grantTypes, bool $confidential): array` - Returns ['client_id', 'client_secret', 'name']
     - `listClients(): array<OAuth2Client>`
     - `deleteClient(string $clientId): void`
