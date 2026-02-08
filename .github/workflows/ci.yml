@@ -15,7 +15,7 @@ jobs:
       mariadb:
         image: mariadb:11.2
         env:
-          MARIADB_ROOT_PASSWORD: !ChangeMe!
+          MARIADB_ROOT_PASSWORD: "!ChangeMe!"
           MARIADB_DATABASE: app_test
         ports:
           - 3306:3306
@@ -143,7 +143,7 @@ jobs:
       mariadb:
         image: mariadb:11.2
         env:
-          MARIADB_ROOT_PASSWORD: !ChangeMe!
+          MARIADB_ROOT_PASSWORD: "!ChangeMe!"
           MARIADB_DATABASE: app_test
         ports:
           - 3306:3306
