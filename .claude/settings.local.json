@@ -32,7 +32,8 @@
       "Bash(./vendor/bin/phpunit:*)",
       "Bash(php -r:*)",
       "Bash(php-cs-fixer fix:*)",
-      "Bash(perl -i -pe:*)"
+      "Bash(perl -i -pe:*)",
+      "Bash(XDEBUG_MODE=coverage vendor/bin/phpunit:*)"
     ]
   }
 }
