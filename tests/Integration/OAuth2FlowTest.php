@@ -532,6 +532,250 @@ final class OAuth2FlowTest extends WebTestCase
         $this->assertFalse($introspectResponse['active']);
     }
 
+    public function testTokenRevocationWithRefreshTokenHint(): void
+    {
+        $browserClient = static::createClient();
+        $this->initializeDatabase();
+
+        // Create user
+        $user = $this->createUser('test@example.com', 'testuser', 'password123');
+
+        // Create OAuth2 client with refresh_token grant
+        $oauth2Client = $this->createOAuth2Client(
+            'test-client',
+            ['authorization_code', 'refresh_token'],
+            ['openid', 'profile', 'offline_access']
+        );
+
+        // Login to get access token
+        $loginRequestBody = json_encode([
+            'email' => 'test@example.com',
+            'password' => 'password123',
+        ], JSON_THROW_ON_ERROR);
+        $this->assertNotFalse($loginRequestBody);
+
+        $browserClient->request(
+            'POST',
+            '/api/users/login',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            $loginRequestBody
+        );
+
+        $loginContent = $browserClient->getResponse()->getContent();
+        $this->assertNotFalse($loginContent);
+        $loginResponse = json_decode($loginContent, true, 512, JSON_THROW_ON_ERROR);
+        $this->assertIsArray($loginResponse);
+        $this->assertArrayHasKey('access_token', $loginResponse);
+        $this->assertIsString($loginResponse['access_token']);
+        $accessToken = $loginResponse['access_token'];
+
+        // Request authorization code
+        $authorizeRequestBody = json_encode([
+            'response_type' => 'code',
+            'client_id' => $oauth2Client->getClientId(),
+            'redirect_uri' => 'https://example.com/callback',
+            'scope' => 'openid profile offline_access',
+        ], JSON_THROW_ON_ERROR);
+        $this->assertNotFalse($authorizeRequestBody);
+
+        $browserClient->request(
+            'POST',
+            '/oauth2/authorize',
+            [],
+            [],
+            [
+                'HTTP_AUTHORIZATION' => 'Bearer ' . $accessToken,
+                'CONTENT_TYPE' => 'application/json',
+            ],
+            $authorizeRequestBody
+        );
+
+        $authContent = $browserClient->getResponse()->getContent();
+        $this->assertNotFalse($authContent);
+        $authResponse = json_decode($authContent, true, 512, JSON_THROW_ON_ERROR);
+        $this->assertIsArray($authResponse);
+        $this->assertArrayHasKey('code', $authResponse);
+
+        // Exchange code for tokens (should include refresh_token)
+        $browserClient->request(
+            'POST',
+            '/oauth2/token',
+            [
+                'grant_type' => 'authorization_code',
+                'code' => $authResponse['code'],
+                'redirect_uri' => 'https://example.com/callback',
+            ],
+            [],
+            [
+                'HTTP_AUTHORIZATION' => 'Basic ' . base64_encode($oauth2Client->getClientId() . ':test-secret'),
+                'CONTENT_TYPE' => 'application/x-www-form-urlencoded',
+            ]
+        );
+
+        $tokenContent = $browserClient->getResponse()->getContent();
+        $this->assertNotFalse($tokenContent);
+        $tokenResponse = json_decode($tokenContent, true, 512, JSON_THROW_ON_ERROR);
+        $this->assertIsArray($tokenResponse);
+        $this->assertArrayHasKey('refresh_token', $tokenResponse);
+        $refreshToken = $tokenResponse['refresh_token'];
+
+        // Revoke refresh token with hint
+        $browserClient->request(
+            'POST',
+            '/oauth2/revoke',
+            [
+                'token' => $refreshToken,
+                'token_type_hint' => 'refresh_token',
+            ],
+            [],
+            [
+                'HTTP_AUTHORIZATION' => 'Basic ' . base64_encode($oauth2Client->getClientId() . ':test-secret'),
+                'CONTENT_TYPE' => 'application/x-www-form-urlencoded',
+            ]
+        );
+
+        $this->assertResponseIsSuccessful();
+    }
+
+    public function testTokenRevocationWithInvalidTokenReturnsSuccess(): void
+    {
+        $browserClient = static::createClient();
+        $this->initializeDatabase();
+
+        // Create OAuth2 client
+        $oauth2Client = $this->createOAuth2Client(
+            'test-client',
+            ['client_credentials'],
+            ['openid', 'profile']
+        );
+
+        // Attempt to revoke invalid token (per RFC 7009, should return 200)
+        $browserClient->request(
+            'POST',
+            '/oauth2/revoke',
+            [
+                'token' => 'invalid-token-string',
+                'token_type_hint' => 'access_token',
+            ],
+            [],
+            [
+                'HTTP_AUTHORIZATION' => 'Basic ' . base64_encode($oauth2Client->getClientId() . ':test-secret'),
+                'CONTENT_TYPE' => 'application/x-www-form-urlencoded',
+            ]
+        );
+
+        // RFC 7009: Should return 200 even if token doesn't exist
+        $this->assertResponseIsSuccessful();
+    }
+
+    public function testTokenRevocationWithoutHintTriesBothTokenTypes(): void
+    {
+        $browserClient = static::createClient();
+        $this->initializeDatabase();
+
+        // Create user
+        $user = $this->createUser('test@example.com', 'testuser', 'password123');
+
+        // Create OAuth2 client with refresh_token grant
+        $oauth2Client = $this->createOAuth2Client(
+            'test-client',
+            ['authorization_code', 'refresh_token'],
+            ['openid', 'profile', 'offline_access']
+        );
+
+        // Login and get authorization code
+        $loginRequestBody = json_encode([
+            'email' => 'test@example.com',
+            'password' => 'password123',
+        ], JSON_THROW_ON_ERROR);
+        $this->assertNotFalse($loginRequestBody);
+
+        $browserClient->request(
+            'POST',
+            '/api/users/login',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            $loginRequestBody
+        );
+
+        $loginContent = $browserClient->getResponse()->getContent();
+        $this->assertNotFalse($loginContent);
+        $loginResponse = json_decode($loginContent, true, 512, JSON_THROW_ON_ERROR);
+        $this->assertIsArray($loginResponse);
+        $this->assertArrayHasKey('access_token', $loginResponse);
+        $this->assertIsString($loginResponse['access_token']);
+        $accessToken = $loginResponse['access_token'];
+
+        // Request authorization code
+        $authorizeRequestBody = json_encode([
+            'response_type' => 'code',
+            'client_id' => $oauth2Client->getClientId(),
+            'redirect_uri' => 'https://example.com/callback',
+            'scope' => 'openid profile offline_access',
+        ], JSON_THROW_ON_ERROR);
+        $this->assertNotFalse($authorizeRequestBody);
+
+        $browserClient->request(
+            'POST',
+            '/oauth2/authorize',
+            [],
+            [],
+            [
+                'HTTP_AUTHORIZATION' => 'Bearer ' . $accessToken,
+                'CONTENT_TYPE' => 'application/json',
+            ],
+            $authorizeRequestBody
+        );
+
+        $authContent = $browserClient->getResponse()->getContent();
+        $this->assertNotFalse($authContent);
+        $authResponse = json_decode($authContent, true, 512, JSON_THROW_ON_ERROR);
+        $this->assertIsArray($authResponse);
+
+        // Exchange code for tokens
+        $browserClient->request(
+            'POST',
+            '/oauth2/token',
+            [
+                'grant_type' => 'authorization_code',
+                'code' => $authResponse['code'],
+                'redirect_uri' => 'https://example.com/callback',
+            ],
+            [],
+            [
+                'HTTP_AUTHORIZATION' => 'Basic ' . base64_encode($oauth2Client->getClientId() . ':test-secret'),
+                'CONTENT_TYPE' => 'application/x-www-form-urlencoded',
+            ]
+        );
+
+        $tokenContent = $browserClient->getResponse()->getContent();
+        $this->assertNotFalse($tokenContent);
+        $tokenResponse = json_decode($tokenContent, true, 512, JSON_THROW_ON_ERROR);
+        $this->assertIsArray($tokenResponse);
+        $refreshToken = $tokenResponse['refresh_token'];
+
+        // Revoke refresh token WITHOUT hint (should try access_token first, then refresh_token)
+        $browserClient->request(
+            'POST',
+            '/oauth2/revoke',
+            [
+                'token' => $refreshToken,
+                // No token_type_hint provided
+            ],
+            [],
+            [
+                'HTTP_AUTHORIZATION' => 'Basic ' . base64_encode($oauth2Client->getClientId() . ':test-secret'),
+                'CONTENT_TYPE' => 'application/x-www-form-urlencoded',
+            ]
+        );
+
+        // Should succeed after trying both types
+        $this->assertResponseIsSuccessful();
+    }
+
     public function testTokenIntrospection(): void
     {
         $browserClient = static::createClient();

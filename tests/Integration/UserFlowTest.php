@@ -342,6 +342,38 @@ final class UserFlowTest extends WebTestCase
         $this->assertResponseStatusCodeSame(400);
     }
 
+    public function testLoginFailsWhenNoOAuth2ClientsAvailable(): void
+    {
+        $client = static::createClient();
+        $this->initializeDatabase();
+
+        // Create user but DO NOT create any OAuth2 clients
+        $user = $this->createUser('test@example.com', 'testuser', 'password123');
+
+        // Attempt to login when no clients are available
+        $loginRequestBody = json_encode([
+            'email' => 'test@example.com',
+            'password' => 'password123',
+        ], JSON_THROW_ON_ERROR);
+        $this->assertNotFalse($loginRequestBody);
+
+        $client->request(
+            'POST',
+            '/api/users/login',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            $loginRequestBody
+        );
+
+        // Should return 500 error as RuntimeException is not handled specifically
+        $this->assertResponseStatusCodeSame(500);
+
+        $content = $client->getResponse()->getContent();
+        $this->assertNotFalse($content);
+        $this->assertStringContainsString('No OAuth2 clients available', $content);
+    }
+
     private function createUser(string $email, string $username, string $password): User
     {
         $container = static::getContainer();
