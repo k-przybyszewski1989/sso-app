@@ -25,6 +25,10 @@ This is a **specification-driven development toolkit** (SpecKit) that provides a
 - Controllers should be `final class`
 - Test classes should be `final class` extending `TestCase`
 
+### Entities
+- Every entity MUST have a `getId()` method
+- Every entity MUST have a `createdAt` and `updatedAt` properties
+
 ### Naming Conventions
 
 - Class Interfaces: `*Interface` suffix (e.g., `CountInterface`)
@@ -84,6 +88,7 @@ This is a **specification-driven development toolkit** (SpecKit) that provides a
 - Validate inputs with Symfony Validation; add custom validators when needed
 - Ensure explicit types throughout; avoid `mixed`/`object`-like patterns
 - Match PSR-12 formatting; keep code readable with descriptive names
+- Use PHPDoc for typing only - avoid unnecessary comments explaining what a method does (this should be part of the function name instead)
 
 ## File Scaffolding Checklist (per class type)
 
