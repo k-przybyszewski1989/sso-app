@@ -422,16 +422,16 @@ All DTOs: `final readonly class` with Symfony validation constraints
 - [x] `tests/Service/User/UserRegistrationServiceTest.php` - Test user registration
 - [x] `tests/Service/User/UserAuthenticationServiceTest.php` - Test authentication
 
-### Phase 14: Repository Tests
+### Phase 14: Repository Tests ✅
 
 **Test repository implementations with database (`final class *Test extends KernelTestCase`):**
 
-- [ ] `tests/Repository/DoctrineUserRepositoryTest.php` - Test CRUD operations, findByEmail, findByUsername
-- [ ] `tests/Repository/DoctrineOAuth2ClientRepositoryTest.php` - Test CRUD, findByClientId
-- [ ] `tests/Repository/DoctrineAccessTokenRepositoryTest.php` - Test CRUD, deleteExpired, revokeAllForUser
-- [ ] `tests/Repository/DoctrineRefreshTokenRepositoryTest.php` - Test CRUD, deleteExpired
-- [ ] `tests/Repository/DoctrineAuthorizationCodeRepositoryTest.php` - Test CRUD, deleteExpired
-- [ ] `tests/Repository/DoctrineScopeRepositoryTest.php` - Test CRUD, findByIdentifiers, findDefaults
+- [x] `tests/Repository/DoctrineUserRepositoryTest.php` - Test CRUD operations, findByEmail, findByUsername
+- [x] `tests/Repository/DoctrineOAuth2ClientRepositoryTest.php` - Test CRUD, findByClientId
+- [x] `tests/Repository/DoctrineAccessTokenRepositoryTest.php` - Test CRUD, deleteExpired, revokeAllForUser
+- [x] `tests/Repository/DoctrineRefreshTokenRepositoryTest.php` - Test CRUD, deleteExpired
+- [x] `tests/Repository/DoctrineAuthorizationCodeRepositoryTest.php` - Test CRUD, deleteExpired
+- [x] `tests/Repository/DoctrineScopeRepositoryTest.php` - Test CRUD, findByIdentifiers, findDefaults
 
 ### Phase 15: Integration Tests
 
