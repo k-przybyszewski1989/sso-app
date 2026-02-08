@@ -393,14 +393,14 @@ All DTOs: `final readonly class` with Symfony validation constraints
     - Configure OAuth2Service to receive tagged grant handlers via `!tagged_iterator`
     - Bind all repository interfaces to Doctrine implementations
 
-### Phase 12: Console Commands
+### Phase 12: Console Commands ✅
 
-- [ ] `src/Command/CleanupExpiredTokensCommand.php`
+- [x] `src/Command/CleanupExpiredTokensCommand.php`
     - `oauth2:cleanup-expired-tokens` - Calls deleteExpired() on all token repositories
     - Returns count of deleted tokens
     - Schedule via cron for daily cleanup
 
-- [ ] `src/Command/CreateAdminUserCommand.php`
+- [x] `src/Command/CreateAdminUserCommand.php`
     - `user:create-admin` - Interactive command to create admin user with ROLE_ADMIN
     - Useful for initial setup
 
