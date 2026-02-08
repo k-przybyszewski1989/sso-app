@@ -81,7 +81,7 @@
             "@auto-scripts"
         ],
         "test": "phpunit",
-        "test:coverage": "phpunit --coverage-html coverage/",
+        "test:coverage": "phpunit --coverage-html coverage/ --coverage-clover coverage.xml",
         "phpstan": "phpstan analyse --memory-limit=1G",
         "phpstan:baseline": "phpstan analyse --memory-limit=1G --generate-baseline",
         "cs-check": "php-cs-fixer fix --dry-run --diff --verbose",

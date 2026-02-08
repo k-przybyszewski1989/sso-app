@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\EventListener;
 
+use App\Exception\EntityNotFoundException;
 use App\Exception\InvalidCredentialsException;
 use App\Exception\OAuth2\OAuth2Exception;
 use InvalidArgumentException;
@@ -37,6 +38,19 @@ final readonly class ExceptionSubscriber implements EventSubscriberInterface
                     'error_description' => $exception->getErrorDescription(),
                 ],
                 $exception->getStatusCode()
+            ));
+
+            return;
+        }
+
+        // Handle entity not found exception
+        if ($exception instanceof EntityNotFoundException) {
+            $event->setResponse(new JsonResponse(
+                [
+                    'error' => 'not_found',
+                    'error_description' => $exception->getMessage(),
+                ],
+                Response::HTTP_NOT_FOUND
             ));
 
             return;

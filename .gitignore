@@ -23,3 +23,5 @@
 /coverage/
 /coverage.xml
 ###< code coverage ###
+
+*-plan.md
