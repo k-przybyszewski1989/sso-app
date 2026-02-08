@@ -343,13 +343,13 @@ All DTOs: `final readonly class` with Symfony validation constraints
     - `deleteClient(string $clientId): void`
     - Hashes client secret with bcrypt before storing
 
-### Phase 9: Scope Enforcement
+### Phase 9: Scope Enforcement ✅
 
-- [ ] `src/Security/Attribute/RequireScope.php` - PHP attribute for scope requirements
+- [x] `src/Security/Attribute/RequireScope.php` - PHP attribute for scope requirements
     - `#[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_METHOD)]`
     - Constructor accepts string|array of required scopes
 
-- [ ] `src/EventListener/ScopeAuthorizationListener.php` - Event subscriber
+- [x] `src/EventListener/ScopeAuthorizationListener.php` - Event subscriber
     - Listens to `kernel.controller` event
     - Checks for `#[RequireScope]` attribute on controller/method
     - Validates current token has required scopes
