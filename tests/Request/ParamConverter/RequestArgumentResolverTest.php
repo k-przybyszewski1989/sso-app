@@ -7,8 +7,11 @@ namespace App\Tests\Request\ParamConverter;
 use App\Request\ParamConverter\RequestArgumentResolver;
 use App\Request\ParamConverter\RequestTransform;
 use App\Request\ParamConverter\RequestValidationException;
+use Iterator;
+use JsonException;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
+use stdClass;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -65,7 +68,7 @@ final class RequestArgumentResolverTest extends TestCase
         $argument = $this->createMock(ArgumentMetadata::class);
         $argument->expects($this->once())
             ->method('getType')
-            ->willReturn(\stdClass::class);
+            ->willReturn(stdClass::class);
         $argument->expects($this->once())
             ->method('getAttributes')
             ->with(RequestTransform::class)
@@ -80,13 +83,13 @@ final class RequestArgumentResolverTest extends TestCase
     {
         $jsonContent = '{"key":"value"}';
         $request = new Request([], [], [], [], [], ['CONTENT_TYPE' => 'application/json'], $jsonContent);
-        $deserializedObject = new \stdClass();
+        $deserializedObject = new stdClass();
         $deserializedObject->key = 'value';
 
         $serializer = $this->createMock(SerializerInterface::class);
         $serializer->expects($this->once())
             ->method('deserialize')
-            ->with($jsonContent, \stdClass::class, 'json')
+            ->with($jsonContent, stdClass::class, 'json')
             ->willReturn($deserializedObject);
 
         $resolver = $this->createResolver(serializer: $serializer);
@@ -94,7 +97,7 @@ final class RequestArgumentResolverTest extends TestCase
         $argument = $this->createMock(ArgumentMetadata::class);
         $argument->expects($this->once())
             ->method('getType')
-            ->willReturn(\stdClass::class);
+            ->willReturn(stdClass::class);
         $argument->expects($this->once())
             ->method('getAttributes')
             ->with(RequestTransform::class)
@@ -110,13 +113,13 @@ final class RequestArgumentResolverTest extends TestCase
     {
         $formData = ['key' => 'value'];
         $request = new Request([], $formData);
-        $deserializedObject = new \stdClass();
+        $deserializedObject = new stdClass();
         $deserializedObject->key = 'value';
 
         $serializer = $this->createMock(SerializerInterface::class);
         $serializer->expects($this->once())
             ->method('deserialize')
-            ->with(json_encode($formData), \stdClass::class, 'json')
+            ->with(json_encode($formData, JSON_THROW_ON_ERROR), stdClass::class, 'json')
             ->willReturn($deserializedObject);
 
         $resolver = $this->createResolver(serializer: $serializer);
@@ -124,7 +127,7 @@ final class RequestArgumentResolverTest extends TestCase
         $argument = $this->createMock(ArgumentMetadata::class);
         $argument->expects($this->once())
             ->method('getType')
-            ->willReturn(\stdClass::class);
+            ->willReturn(stdClass::class);
         $argument->expects($this->once())
             ->method('getAttributes')
             ->with(RequestTransform::class)
@@ -139,12 +142,11 @@ final class RequestArgumentResolverTest extends TestCase
     public function testResolveHandlesDeserializationExceptionAndCreatesEmptyObject(): void
     {
         $request = new Request([], [], [], [], [], ['CONTENT_TYPE' => 'application/json'], 'invalid json');
-        $exception = new \Exception('Deserialization failed');
+        $exception = new JsonException('Syntax error', 4);
 
         $serializer = $this->createMock(SerializerInterface::class);
-        $serializer->expects($this->once())
-            ->method('deserialize')
-            ->willThrowException($exception);
+        $serializer->expects($this->never())
+            ->method('deserialize');
 
         $logger = $this->createMock(LoggerInterface::class);
         $logger->expects($this->once())
@@ -158,7 +160,7 @@ final class RequestArgumentResolverTest extends TestCase
         $argument = $this->createMock(ArgumentMetadata::class);
         $argument->expects($this->once())
             ->method('getType')
-            ->willReturn(\stdClass::class);
+            ->willReturn(stdClass::class);
         $argument->expects($this->once())
             ->method('getAttributes')
             ->with(RequestTransform::class)
@@ -167,14 +169,14 @@ final class RequestArgumentResolverTest extends TestCase
         $result = iterator_to_array($resolver->resolve($request, $argument));
 
         $this->assertCount(1, $result);
-        $this->assertInstanceOf(\stdClass::class, $result[0]);
+        $this->assertInstanceOf(stdClass::class, $result[0]);
     }
 
     public function testResolveValidatesObjectWhenValidationEnabled(): void
     {
         $jsonContent = '{"key":"value"}';
         $request = new Request([], [], [], [], [], ['CONTENT_TYPE' => 'application/json'], $jsonContent);
-        $deserializedObject = new \stdClass();
+        $deserializedObject = new stdClass();
 
         $serializer = $this->createMock(SerializerInterface::class);
         $serializer->expects($this->once())
@@ -192,7 +194,7 @@ final class RequestArgumentResolverTest extends TestCase
         $argument = $this->createMock(ArgumentMetadata::class);
         $argument->expects($this->once())
             ->method('getType')
-            ->willReturn(\stdClass::class);
+            ->willReturn(stdClass::class);
         $argument->expects($this->once())
             ->method('getAttributes')
             ->with(RequestTransform::class)
@@ -208,7 +210,7 @@ final class RequestArgumentResolverTest extends TestCase
     {
         $jsonContent = '{"key":"value"}';
         $request = new Request([], [], [], [], [], ['CONTENT_TYPE' => 'application/json'], $jsonContent);
-        $deserializedObject = new \stdClass();
+        $deserializedObject = new stdClass();
 
         $violation = new ConstraintViolation(
             'Invalid value',
@@ -236,7 +238,7 @@ final class RequestArgumentResolverTest extends TestCase
         $argument = $this->createMock(ArgumentMetadata::class);
         $argument->expects($this->once())
             ->method('getType')
-            ->willReturn(\stdClass::class);
+            ->willReturn(stdClass::class);
         $argument->expects($this->once())
             ->method('getAttributes')
             ->with(RequestTransform::class)
@@ -251,7 +253,7 @@ final class RequestArgumentResolverTest extends TestCase
     {
         $jsonContent = '{"key":"value"}';
         $request = new Request([], [], [], [], [], ['CONTENT_TYPE' => 'application/json'], $jsonContent);
-        $deserializedObject = new \stdClass();
+        $deserializedObject = new stdClass();
 
         $serializer = $this->createMock(SerializerInterface::class);
         $serializer->expects($this->once())
@@ -267,7 +269,7 @@ final class RequestArgumentResolverTest extends TestCase
         $argument = $this->createMock(ArgumentMetadata::class);
         $argument->expects($this->once())
             ->method('getType')
-            ->willReturn(\stdClass::class);
+            ->willReturn(stdClass::class);
         $argument->expects($this->once())
             ->method('getAttributes')
             ->with(RequestTransform::class)
@@ -283,8 +285,8 @@ final class RequestArgumentResolverTest extends TestCase
     {
         $jsonContent = '{"key":"value"}';
         $request = new Request([], [], [], [], [], ['CONTENT_TYPE' => 'application/json'], $jsonContent);
-        $deserializedObject1 = new \stdClass();
-        $deserializedObject2 = new \stdClass();
+        $deserializedObject1 = new stdClass();
+        $deserializedObject2 = new stdClass();
 
         $serializer = $this->createMock(SerializerInterface::class);
         $serializer->expects($this->exactly(2))
@@ -296,7 +298,7 @@ final class RequestArgumentResolverTest extends TestCase
         $argument = $this->createMock(ArgumentMetadata::class);
         $argument->expects($this->once())
             ->method('getType')
-            ->willReturn(\stdClass::class);
+            ->willReturn(stdClass::class);
         $argument->expects($this->once())
             ->method('getAttributes')
             ->with(RequestTransform::class)
@@ -316,7 +318,7 @@ final class RequestArgumentResolverTest extends TestCase
     {
         $jsonContent = '{"key":"value"}';
         $request = new Request([], [], [], [], [], ['CONTENT_TYPE' => 'application/json'], $jsonContent);
-        $deserializedObject = new \stdClass();
+        $deserializedObject = new stdClass();
 
         $violation1 = new ConstraintViolation(
             'Error 1',
@@ -352,7 +354,7 @@ final class RequestArgumentResolverTest extends TestCase
         $argument = $this->createMock(ArgumentMetadata::class);
         $argument->expects($this->once())
             ->method('getType')
-            ->willReturn(\stdClass::class);
+            ->willReturn(stdClass::class);
         $argument->expects($this->once())
             ->method('getAttributes')
             ->with(RequestTransform::class)
@@ -375,12 +377,12 @@ final class RequestArgumentResolverTest extends TestCase
     {
         $jsonContent = '{"key":"value"}';
         $request = new Request([], [], [], [], [], ['CONTENT_TYPE' => 'application/json'], $jsonContent);
-        $deserializedObject = new \stdClass();
+        $deserializedObject = new stdClass();
 
         $serializer = $this->createMock(SerializerInterface::class);
         $serializer->expects($this->once())
             ->method('deserialize')
-            ->with($jsonContent, \Iterator::class, 'json')
+            ->with($jsonContent, Iterator::class, 'json')
             ->willReturn($deserializedObject);
 
         $resolver = $this->createResolver(serializer: $serializer);
@@ -388,7 +390,7 @@ final class RequestArgumentResolverTest extends TestCase
         $argument = $this->createMock(ArgumentMetadata::class);
         $argument->expects($this->once())
             ->method('getType')
-            ->willReturn(\Iterator::class);
+            ->willReturn(Iterator::class);
         $argument->expects($this->once())
             ->method('getAttributes')
             ->with(RequestTransform::class)

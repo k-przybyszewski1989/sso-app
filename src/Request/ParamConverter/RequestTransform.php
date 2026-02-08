@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Request\ParamConverter;
 
-#[\Attribute(\Attribute::TARGET_PARAMETER)]
+use Attribute;
+
+#[Attribute(Attribute::TARGET_PARAMETER)]
 final class RequestTransform
 {
     public function __construct(

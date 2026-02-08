@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Request\ParamConverter;
 
 use Psr\Log\LoggerInterface;
+use ReflectionClass;
+use RuntimeException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Controller\ValueResolverInterface;
 use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
@@ -12,6 +14,11 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Throwable;
+
+use function class_exists;
+use function interface_exists;
+use function is_string;
 
 final readonly class RequestArgumentResolver implements ValueResolverInterface
 {
@@ -23,13 +30,15 @@ final readonly class RequestArgumentResolver implements ValueResolverInterface
     }
 
     /**
+     * {@inheritDoc}
+     *
      * @return iterable<array-key, object>
      */
     public function resolve(Request $request, ArgumentMetadata $argument): iterable
     {
         $type = $argument->getType();
 
-        if (false === \is_string($type) || (false === \class_exists($type) && false === \interface_exists($type))) {
+        if (false === is_string($type) || (false === class_exists($type) && false === interface_exists($type))) {
             return [];
         }
 
@@ -45,17 +54,37 @@ final readonly class RequestArgumentResolver implements ValueResolverInterface
     private function deserialize(RequestTransform $attribute, Request $request, string $class): object
     {
         try {
-            $encoded = 'json' === $request->getContentTypeFormat() ?
-                (string) $request->getContent() :
-                (string) json_encode($request->request->all(), JSON_THROW_ON_ERROR);
+            $data = 'json' === $request->getContentTypeFormat() ?
+                json_decode((string) $request->getContent(), true, 512, JSON_THROW_ON_ERROR) :
+                $request->request->all();
 
-            $object = $this->serializer->deserialize($encoded, $class, 'json');
-        } catch (\Throwable $exception) {
+            if (!is_array($data)) {
+                $data = [];
+            }
+
+            // Add Authorization header to data if the class has an authorizationHeader property
+            if (property_exists($class, 'authorizationHeader')) {
+                $authHeader = $request->headers->get('Authorization');
+                if (null !== $authHeader && !isset($data['authorization_header']) && !isset($data['authorizationHeader'])) {
+                    // Use snake_case key since the name converter will convert it to camelCase
+                    $data['authorization_header'] = $authHeader;
+                }
+            }
+
+            $encoded = json_encode($data, JSON_THROW_ON_ERROR);
+            $deserialized = $this->serializer->deserialize($encoded, $class, 'json');
+
+            if (!is_object($deserialized)) {
+                throw new RuntimeException('Deserialization did not return an object');
+            }
+
+            $object = $deserialized;
+        } catch (Throwable $exception) {
             $this->logger->error('Request input deserialization exception', [
                 'exception' => $exception,
             ]);
 
-            $object = (new \ReflectionClass($class))->newInstanceWithoutConstructor();
+            $object = (new ReflectionClass($class))->newInstanceWithoutConstructor();
         }
 
         if ($attribute->validate) {

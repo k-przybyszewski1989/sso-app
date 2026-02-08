@@ -12,6 +12,9 @@ use Symfony\Component\HttpKernel\KernelEvents;
 
 final readonly class RequestExceptionSubscriber implements EventSubscriberInterface
 {
+    /**
+     * {@inheritDoc}
+     */
     public static function getSubscribedEvents(): array
     {
         return [KernelEvents::EXCEPTION => 'onValidationException'];
