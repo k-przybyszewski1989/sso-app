@@ -33,8 +33,14 @@ final class TypedConstantRule implements Rule
     {
         $errors = [];
         $classReflection = $node->getClassReflection();
+        $nativeReflection = $classReflection->getNativeReflection();
 
-        foreach ($classReflection->getNativeReflection()->getReflectionConstants() as $constant) {
+        // Skip enums - their cases are typed by the enum's backing type
+        if ($nativeReflection->isEnum()) {
+            return [];
+        }
+
+        foreach ($nativeReflection->getReflectionConstants() as $constant) {
             if ($constant->getDeclaringClass()->getName() !== $classReflection->getName()) {
                 continue;
             }
