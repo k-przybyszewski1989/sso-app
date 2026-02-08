@@ -66,11 +66,12 @@ final readonly class ScopeAuthorizationListener implements EventSubscriberInterf
             return;
         }
 
-        // Get access token from token attributes
-        $accessToken = $token->getAttribute('access_token');
+        // Get access token from request attributes
+        $request = $event->getRequest();
+        $accessToken = $request->attributes->get('oauth2_access_token');
 
         if (!$accessToken instanceof AccessToken) {
-            $this->logger->warning('Scope authorization failed: no access token in security context');
+            $this->logger->warning('Scope authorization failed: no access token in request context');
             $event->setController(fn () => $this->createForbiddenResponse('Invalid authentication'));
 
             return;

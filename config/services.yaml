@@ -19,5 +19,28 @@ services:
     App\:
         resource: '../src/'
 
+    # Repository interface bindings
+    App\Repository\UserRepositoryInterface: '@App\Repository\DoctrineUserRepository'
+    App\Repository\OAuth2ClientRepositoryInterface: '@App\Repository\DoctrineOAuth2ClientRepository'
+    App\Repository\AccessTokenRepositoryInterface: '@App\Repository\DoctrineAccessTokenRepository'
+    App\Repository\RefreshTokenRepositoryInterface: '@App\Repository\DoctrineRefreshTokenRepository'
+    App\Repository\AuthorizationCodeRepositoryInterface: '@App\Repository\DoctrineAuthorizationCodeRepository'
+    App\Repository\ScopeRepositoryInterface: '@App\Repository\DoctrineScopeRepository'
+
+    # Tag all grant handlers
+    App\Service\OAuth2\Grant\ClientCredentialsGrantHandler:
+        tags: ['app.oauth2.grant_handler']
+
+    App\Service\OAuth2\Grant\AuthorizationCodeGrantHandler:
+        tags: ['app.oauth2.grant_handler']
+
+    App\Service\OAuth2\Grant\RefreshTokenGrantHandler:
+        tags: ['app.oauth2.grant_handler']
+
+    # Configure OAuth2Service to receive tagged grant handlers
+    App\Service\OAuth2\OAuth2Service:
+        arguments:
+            $grantHandlers: !tagged_iterator app.oauth2.grant_handler
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

@@ -373,22 +373,22 @@ All DTOs: `final readonly class` with Symfony validation constraints
     - `POST /api/clients` - `create(CreateClientRequest)` - Creates client, returns client_id and client_secret (admin only)
     - `DELETE /api/clients/{clientId}` - `delete(string $clientId)` - Deletes client (admin only)
 
-### Phase 11: Security Integration
+### Phase 11: Security Integration ✅
 
-- [ ] `src/Security/OAuth2Authenticator.php` - Implements `AbstractAuthenticator`
+- [x] `src/Security/OAuth2Authenticator.php` - Implements `AbstractAuthenticator`
     - `supports(Request)` - Checks for "Bearer " token in Authorization header
     - `authenticate(Request)` - Extracts token, validates via AccessTokenService, returns Passport with user
     - `onAuthenticationSuccess()` - Returns null (continues request)
     - `onAuthenticationFailure()` - Returns 401 JSON with error
 
-- [ ] Update `config/packages/security.yaml`:
+- [x] Update `config/packages/security.yaml`:
     - Add password hasher for User entity (auto)
     - Add password hasher for OAuth2Client (bcrypt, cost 12)
     - Add entity user provider for User
     - Add firewalls: oauth2_token (stateless, no security), api (stateless, OAuth2Authenticator)
     - Add access control: /oauth2 (PUBLIC), /api/clients (ROLE_ADMIN), /api (IS_AUTHENTICATED_FULLY)
 
-- [ ] Update `config/services.yaml`:
+- [x] Update `config/services.yaml`:
     - Tag all grant handlers with 'app.oauth2.grant_handler'
     - Configure OAuth2Service to receive tagged grant handlers via `!tagged_iterator`
     - Bind all repository interfaces to Doctrine implementations
