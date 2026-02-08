@@ -30,7 +30,9 @@
       "Bash(vendor/bin/phpunit:*)",
       "Bash(vendor/bin/php-cs-fixer:*)",
       "Bash(./vendor/bin/phpunit:*)",
-      "Bash(php -r:*)"
+      "Bash(php -r:*)",
+      "Bash(php-cs-fixer fix:*)",
+      "Bash(perl -i -pe:*)"
     ]
   }
 }
