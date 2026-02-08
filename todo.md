@@ -317,23 +317,21 @@ All DTOs: `final readonly class` with Symfony validation constraints
     - `issueToken(TokenRequest $request): TokenResponse` - Delegates to appropriate grant handler
     - Throws UnsupportedGrantTypeException if no handler supports grant type
 
-### Phase 7: User Services ✅
+### Phase 7: User Services
 
-- [x] `src/Service/User/UserRegistrationServiceInterface.php` + `src/Service/User/UserRegistrationService.php`
+- [ ] `src/Service/User/UserRegistrationServiceInterface.php` + `src/Service/User/UserRegistrationService.php`
     - `registerUser(string $email, string $username, string $password): User`
     - Validates email/username uniqueness
     - Hashes password
     - Creates User entity
     - Logs registration
 
-- [x] `src/Service/User/UserAuthenticationServiceInterface.php` + `src/Service/User/UserAuthenticationService.php`
+- [ ] `src/Service/User/UserAuthenticationServiceInterface.php` + `src/Service/User/UserAuthenticationService.php`
     - `authenticate(string $email, string $password): User`
     - Finds user by email
     - Verifies password with PasswordHasher
     - Updates lastLoginAt
     - Throws InvalidCredentialsException if invalid
-
-- [x] `src/Exception/InvalidCredentialsException.php` - Exception for invalid authentication
 
 ### Phase 8: Client Management Service
 
