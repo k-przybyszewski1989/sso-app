@@ -404,23 +404,23 @@ All DTOs: `final readonly class` with Symfony validation constraints
     - `user:create-admin` - Interactive command to create admin user with ROLE_ADMIN
     - Useful for initial setup
 
-### Phase 13: Unit Tests
+### Phase 13: Unit Tests ✅
 
 **Test all services in isolation (`final class *Test extends TestCase`):**
 
-- [ ] `tests/Service/OAuth2/TokenGeneratorServiceTest.php` - Test token generation uniqueness and length
-- [ ] `tests/Service/OAuth2/PkceServiceTest.php` - Test plain and S256 validation
-- [ ] `tests/Service/OAuth2/ScopeValidationServiceTest.php` - Test scope validation logic
-- [ ] `tests/Service/OAuth2/ClientAuthenticationServiceTest.php` - Test Basic Auth and POST body auth, invalid credentials
-- [ ] `tests/Service/OAuth2/AccessTokenServiceTest.php` - Test token creation, validation, revocation
-- [ ] `tests/Service/OAuth2/RefreshTokenServiceTest.php` - Test token rotation
-- [ ] `tests/Service/OAuth2/AuthorizationCodeServiceTest.php` - Test code creation, validation, PKCE
-- [ ] `tests/Service/OAuth2/Grant/ClientCredentialsGrantHandlerTest.php` - Test grant handler
-- [ ] `tests/Service/OAuth2/Grant/AuthorizationCodeGrantHandlerTest.php` - Test grant handler
-- [ ] `tests/Service/OAuth2/Grant/RefreshTokenGrantHandlerTest.php` - Test grant handler
-- [ ] `tests/Service/OAuth2/OAuth2ServiceTest.php` - Test orchestrator delegation
-- [ ] `tests/Service/User/UserRegistrationServiceTest.php` - Test user registration
-- [ ] `tests/Service/User/UserAuthenticationServiceTest.php` - Test authentication
+- [x] `tests/Service/OAuth2/TokenGeneratorServiceTest.php` - Test token generation uniqueness and length
+- [x] `tests/Service/OAuth2/PkceServiceTest.php` - Test plain and S256 validation
+- [x] `tests/Service/OAuth2/ScopeValidationServiceTest.php` - Test scope validation logic
+- [x] `tests/Service/OAuth2/ClientAuthenticationServiceTest.php` - Test Basic Auth and POST body auth, invalid credentials
+- [x] `tests/Service/OAuth2/AccessTokenServiceTest.php` - Test token creation, validation, revocation
+- [x] `tests/Service/OAuth2/RefreshTokenServiceTest.php` - Test token rotation
+- [x] `tests/Service/OAuth2/AuthorizationCodeServiceTest.php` - Test code creation, validation, PKCE
+- [x] `tests/Service/OAuth2/Grant/ClientCredentialsGrantHandlerTest.php` - Test grant handler
+- [x] `tests/Service/OAuth2/Grant/AuthorizationCodeGrantHandlerTest.php` - Test grant handler
+- [x] `tests/Service/OAuth2/Grant/RefreshTokenGrantHandlerTest.php` - Test grant handler
+- [x] `tests/Service/OAuth2/OAuth2ServiceTest.php` - Test orchestrator delegation
+- [x] `tests/Service/User/UserRegistrationServiceTest.php` - Test user registration
+- [x] `tests/Service/User/UserAuthenticationServiceTest.php` - Test authentication
 
 ### Phase 14: Repository Tests
 
