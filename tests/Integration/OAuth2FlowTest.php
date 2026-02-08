@@ -8,6 +8,7 @@ use App\Entity\OAuth2Client;
 use App\Entity\Scope;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
@@ -35,7 +36,7 @@ final class OAuth2FlowTest extends WebTestCase
         foreach ($tables as $table) {
             try {
                 $connection->executeStatement("TRUNCATE TABLE {$table}");
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 // Table might not exist yet
             }
         }
@@ -73,6 +74,12 @@ final class OAuth2FlowTest extends WebTestCase
         );
 
         // Request token
+        $requestBody = json_encode([
+            'grant_type' => 'client_credentials',
+            'scope' => 'openid profile',
+        ], JSON_THROW_ON_ERROR);
+        $this->assertNotFalse($requestBody, 'Failed to encode JSON request body');
+
         $browserClient->request(
             'POST',
             '/oauth2/token',
@@ -82,15 +89,15 @@ final class OAuth2FlowTest extends WebTestCase
                 'HTTP_AUTHORIZATION' => 'Basic ' . base64_encode($oauth2Client->getClientId() . ':test-secret'),
                 'CONTENT_TYPE' => 'application/json',
             ],
-            json_encode([
-                'grant_type' => 'client_credentials',
-                'scope' => 'openid profile',
-            ])
+            $requestBody
         );
 
         $this->assertResponseIsSuccessful();
 
-        $response = json_decode($browserClient->getResponse()->getContent(), true);
+        $responseContent = $browserClient->getResponse()->getContent();
+        $this->assertNotFalse($responseContent, 'Failed to get response content');
+        $response = json_decode($responseContent, true, 512, JSON_THROW_ON_ERROR);
+        $this->assertIsArray($response, 'Response is not a valid JSON array');
 
         $this->assertArrayHasKey('access_token', $response);
         $this->assertArrayHasKey('token_type', $response);
@@ -98,6 +105,7 @@ final class OAuth2FlowTest extends WebTestCase
         $this->assertArrayHasKey('scope', $response);
         $this->assertEquals('Bearer', $response['token_type']);
         $this->assertEquals(3600, $response['expires_in']);
+        $this->assertIsString($response['scope']);
         $this->assertStringContainsString('openid', $response['scope']);
         $this->assertStringContainsString('profile', $response['scope']);
         $this->assertArrayNotHasKey('refresh_token', $response);
@@ -119,23 +127,40 @@ final class OAuth2FlowTest extends WebTestCase
         );
 
         // Login user to get access token
+        $loginRequestBody = json_encode([
+            'email' => 'test@example.com',
+            'password' => 'password123',
+        ], JSON_THROW_ON_ERROR);
+        $this->assertNotFalse($loginRequestBody);
+
         $browserClient->request(
             'POST',
             '/api/users/login',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            json_encode([
-                'email' => 'test@example.com',
-                'password' => 'password123',
-            ])
+            $loginRequestBody
         );
 
         $this->assertResponseIsSuccessful();
-        $loginResponse = json_decode($browserClient->getResponse()->getContent(), true);
+        $loginContent = $browserClient->getResponse()->getContent();
+        $this->assertNotFalse($loginContent);
+        $loginResponse = json_decode($loginContent, true, 512, JSON_THROW_ON_ERROR);
+        $this->assertIsArray($loginResponse);
+        $this->assertArrayHasKey('access_token', $loginResponse);
+        $this->assertIsString($loginResponse['access_token']);
         $userAccessToken = $loginResponse['access_token'];
 
         // Get authorization code
+        $authorizeRequestBody = json_encode([
+            'response_type' => 'code',
+            'client_id' => $oauth2Client->getClientId(),
+            'redirect_uri' => 'https://example.com/callback',
+            'scope' => 'openid profile email offline_access',
+            'state' => 'random-state',
+        ], JSON_THROW_ON_ERROR);
+        $this->assertNotFalse($authorizeRequestBody);
+
         $browserClient->request(
             'POST',
             '/oauth2/authorize',
@@ -145,17 +170,14 @@ final class OAuth2FlowTest extends WebTestCase
                 'HTTP_AUTHORIZATION' => 'Bearer ' . $userAccessToken,
                 'CONTENT_TYPE' => 'application/json',
             ],
-            json_encode([
-                'response_type' => 'code',
-                'client_id' => $oauth2Client->getClientId(),
-                'redirect_uri' => 'https://example.com/callback',
-                'scope' => 'openid profile email offline_access',
-                'state' => 'random-state',
-            ])
+            $authorizeRequestBody
         );
 
         $this->assertResponseIsSuccessful();
-        $authResponse = json_decode($browserClient->getResponse()->getContent(), true);
+        $authContent = $browserClient->getResponse()->getContent();
+        $this->assertNotFalse($authContent);
+        $authResponse = json_decode($authContent, true, 512, JSON_THROW_ON_ERROR);
+        $this->assertIsArray($authResponse);
 
         $this->assertArrayHasKey('code', $authResponse);
         $this->assertArrayHasKey('state', $authResponse);
@@ -181,7 +203,10 @@ final class OAuth2FlowTest extends WebTestCase
 
         $this->assertResponseIsSuccessful();
 
-        $tokenResponse = json_decode($browserClient->getResponse()->getContent(), true);
+        $tokenContent = $browserClient->getResponse()->getContent();
+        $this->assertNotFalse($tokenContent);
+        $tokenResponse = json_decode($tokenContent, true, 512, JSON_THROW_ON_ERROR);
+        $this->assertIsArray($tokenResponse);
 
         $this->assertArrayHasKey('access_token', $tokenResponse);
         $this->assertArrayHasKey('token_type', $tokenResponse);
@@ -207,20 +232,37 @@ final class OAuth2FlowTest extends WebTestCase
         );
 
         // Get initial tokens (via authorization code flow)
+        $loginRequestBody = json_encode([
+            'email' => 'test@example.com',
+            'password' => 'password123',
+        ], JSON_THROW_ON_ERROR);
+        $this->assertNotFalse($loginRequestBody);
+
         $browserClient->request(
             'POST',
             '/api/users/login',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            json_encode([
-                'email' => 'test@example.com',
-                'password' => 'password123',
-            ])
+            $loginRequestBody
         );
 
-        $loginResponse = json_decode($browserClient->getResponse()->getContent(), true);
+        $loginContent = $browserClient->getResponse()->getContent();
+        $this->assertNotFalse($loginContent);
+        $loginResponse = json_decode($loginContent, true, 512, JSON_THROW_ON_ERROR);
+        $this->assertIsArray($loginResponse);
+        $this->assertArrayHasKey('access_token', $loginResponse);
+        $this->assertIsString($loginResponse['access_token']);
         $userAccessToken = $loginResponse['access_token'];
+
+        $authorizeRequestBody = json_encode([
+            'response_type' => 'code',
+            'client_id' => $oauth2Client->getClientId(),
+            'redirect_uri' => 'https://example.com/callback',
+            'scope' => 'openid profile email offline_access',
+            'state' => 'random-state',
+        ], JSON_THROW_ON_ERROR);
+        $this->assertNotFalse($authorizeRequestBody);
 
         $browserClient->request(
             'POST',
@@ -231,16 +273,14 @@ final class OAuth2FlowTest extends WebTestCase
                 'HTTP_AUTHORIZATION' => 'Bearer ' . $userAccessToken,
                 'CONTENT_TYPE' => 'application/json',
             ],
-            json_encode([
-                'response_type' => 'code',
-                'client_id' => $oauth2Client->getClientId(),
-                'redirect_uri' => 'https://example.com/callback',
-                'scope' => 'openid profile email offline_access',
-                'state' => 'random-state',
-            ])
+            $authorizeRequestBody
         );
 
-        $authResponse = json_decode($browserClient->getResponse()->getContent(), true);
+        $authContent = $browserClient->getResponse()->getContent();
+        $this->assertNotFalse($authContent);
+        $authResponse = json_decode($authContent, true, 512, JSON_THROW_ON_ERROR);
+        $this->assertIsArray($authResponse);
+        $this->assertArrayHasKey('code', $authResponse);
         $authCode = $authResponse['code'];
 
         $browserClient->request(
@@ -258,7 +298,12 @@ final class OAuth2FlowTest extends WebTestCase
             ]
         );
 
-        $tokenResponse = json_decode($browserClient->getResponse()->getContent(), true);
+        $tokenContent = $browserClient->getResponse()->getContent();
+        $this->assertNotFalse($tokenContent);
+        $tokenResponse = json_decode($tokenContent, true, 512, JSON_THROW_ON_ERROR);
+        $this->assertIsArray($tokenResponse);
+        $this->assertArrayHasKey('refresh_token', $tokenResponse);
+        $this->assertArrayHasKey('access_token', $tokenResponse);
         $refreshToken = $tokenResponse['refresh_token'];
         $oldAccessToken = $tokenResponse['access_token'];
 
@@ -279,7 +324,10 @@ final class OAuth2FlowTest extends WebTestCase
 
         $this->assertResponseIsSuccessful();
 
-        $newTokenResponse = json_decode($browserClient->getResponse()->getContent(), true);
+        $newTokenContent = $browserClient->getResponse()->getContent();
+        $this->assertNotFalse($newTokenContent);
+        $newTokenResponse = json_decode($newTokenContent, true, 512, JSON_THROW_ON_ERROR);
+        $this->assertIsArray($newTokenResponse);
 
         $this->assertArrayHasKey('access_token', $newTokenResponse);
         $this->assertArrayHasKey('refresh_token', $newTokenResponse);
@@ -307,22 +355,41 @@ final class OAuth2FlowTest extends WebTestCase
         $codeChallenge = rtrim(strtr(base64_encode(hash('sha256', $codeVerifier, true)), '+/', '-_'), '=');
 
         // Login user
+        $loginRequestBody = json_encode([
+            'email' => 'test@example.com',
+            'password' => 'password123',
+        ], JSON_THROW_ON_ERROR);
+        $this->assertNotFalse($loginRequestBody);
+
         $browserClient->request(
             'POST',
             '/api/users/login',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            json_encode([
-                'email' => 'test@example.com',
-                'password' => 'password123',
-            ])
+            $loginRequestBody
         );
 
-        $loginResponse = json_decode($browserClient->getResponse()->getContent(), true);
+        $loginContent = $browserClient->getResponse()->getContent();
+        $this->assertNotFalse($loginContent);
+        $loginResponse = json_decode($loginContent, true, 512, JSON_THROW_ON_ERROR);
+        $this->assertIsArray($loginResponse);
+        $this->assertArrayHasKey('access_token', $loginResponse);
+        $this->assertIsString($loginResponse['access_token']);
         $userAccessToken = $loginResponse['access_token'];
 
         // Get authorization code with PKCE
+        $authorizeRequestBody = json_encode([
+            'response_type' => 'code',
+            'client_id' => $oauth2Client->getClientId(),
+            'redirect_uri' => 'https://example.com/callback',
+            'scope' => 'openid profile email offline_access',
+            'state' => 'random-state',
+            'code_challenge' => $codeChallenge,
+            'code_challenge_method' => 'S256',
+        ], JSON_THROW_ON_ERROR);
+        $this->assertNotFalse($authorizeRequestBody);
+
         $browserClient->request(
             'POST',
             '/oauth2/authorize',
@@ -332,19 +399,15 @@ final class OAuth2FlowTest extends WebTestCase
                 'HTTP_AUTHORIZATION' => 'Bearer ' . $userAccessToken,
                 'CONTENT_TYPE' => 'application/json',
             ],
-            json_encode([
-                'response_type' => 'code',
-                'client_id' => $oauth2Client->getClientId(),
-                'redirect_uri' => 'https://example.com/callback',
-                'scope' => 'openid profile email offline_access',
-                'state' => 'random-state',
-                'code_challenge' => $codeChallenge,
-                'code_challenge_method' => 'S256',
-            ])
+            $authorizeRequestBody
         );
 
         $this->assertResponseIsSuccessful();
-        $authResponse = json_decode($browserClient->getResponse()->getContent(), true);
+        $authContent = $browserClient->getResponse()->getContent();
+        $this->assertNotFalse($authContent);
+        $authResponse = json_decode($authContent, true, 512, JSON_THROW_ON_ERROR);
+        $this->assertIsArray($authResponse);
+        $this->assertArrayHasKey('code', $authResponse);
         $authCode = $authResponse['code'];
 
         // Exchange code for tokens with code_verifier
@@ -366,7 +429,10 @@ final class OAuth2FlowTest extends WebTestCase
 
         $this->assertResponseIsSuccessful();
 
-        $tokenResponse = json_decode($browserClient->getResponse()->getContent(), true);
+        $tokenContent = $browserClient->getResponse()->getContent();
+        $this->assertNotFalse($tokenContent);
+        $tokenResponse = json_decode($tokenContent, true, 512, JSON_THROW_ON_ERROR);
+        $this->assertIsArray($tokenResponse);
 
         $this->assertArrayHasKey('access_token', $tokenResponse);
         $this->assertArrayHasKey('refresh_token', $tokenResponse);
@@ -399,7 +465,11 @@ final class OAuth2FlowTest extends WebTestCase
             ]
         );
 
-        $tokenResponse = json_decode($browserClient->getResponse()->getContent(), true);
+        $tokenContent = $browserClient->getResponse()->getContent();
+        $this->assertNotFalse($tokenContent);
+        $tokenResponse = json_decode($tokenContent, true, 512, JSON_THROW_ON_ERROR);
+        $this->assertIsArray($tokenResponse);
+        $this->assertArrayHasKey('access_token', $tokenResponse);
         $accessToken = $tokenResponse['access_token'];
 
         // Verify token works
@@ -416,7 +486,11 @@ final class OAuth2FlowTest extends WebTestCase
             ]
         );
 
-        $introspectResponse = json_decode($browserClient->getResponse()->getContent(), true);
+        $introspectContent = $browserClient->getResponse()->getContent();
+        $this->assertNotFalse($introspectContent);
+        $introspectResponse = json_decode($introspectContent, true, 512, JSON_THROW_ON_ERROR);
+        $this->assertIsArray($introspectResponse);
+        $this->assertArrayHasKey('active', $introspectResponse);
         $this->assertTrue($introspectResponse['active']);
 
         // Revoke token
@@ -450,7 +524,11 @@ final class OAuth2FlowTest extends WebTestCase
             ]
         );
 
-        $introspectResponse = json_decode($browserClient->getResponse()->getContent(), true);
+        $introspectContent2 = $browserClient->getResponse()->getContent();
+        $this->assertNotFalse($introspectContent2);
+        $introspectResponse = json_decode($introspectContent2, true, 512, JSON_THROW_ON_ERROR);
+        $this->assertIsArray($introspectResponse);
+        $this->assertArrayHasKey('active', $introspectResponse);
         $this->assertFalse($introspectResponse['active']);
     }
 
@@ -470,20 +548,37 @@ final class OAuth2FlowTest extends WebTestCase
         );
 
         // Login and get authorization code
+        $loginRequestBody = json_encode([
+            'email' => 'test@example.com',
+            'password' => 'password123',
+        ], JSON_THROW_ON_ERROR);
+        $this->assertNotFalse($loginRequestBody);
+
         $browserClient->request(
             'POST',
             '/api/users/login',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            json_encode([
-                'email' => 'test@example.com',
-                'password' => 'password123',
-            ])
+            $loginRequestBody
         );
 
-        $loginResponse = json_decode($browserClient->getResponse()->getContent(), true);
+        $loginContent = $browserClient->getResponse()->getContent();
+        $this->assertNotFalse($loginContent);
+        $loginResponse = json_decode($loginContent, true, 512, JSON_THROW_ON_ERROR);
+        $this->assertIsArray($loginResponse);
+        $this->assertArrayHasKey('access_token', $loginResponse);
+        $this->assertIsString($loginResponse['access_token']);
         $userAccessToken = $loginResponse['access_token'];
+
+        $authorizeRequestBody = json_encode([
+            'response_type' => 'code',
+            'client_id' => $oauth2Client->getClientId(),
+            'redirect_uri' => 'https://example.com/callback',
+            'scope' => 'openid profile email',
+            'state' => 'random-state',
+        ], JSON_THROW_ON_ERROR);
+        $this->assertNotFalse($authorizeRequestBody);
 
         $browserClient->request(
             'POST',
@@ -494,16 +589,14 @@ final class OAuth2FlowTest extends WebTestCase
                 'HTTP_AUTHORIZATION' => 'Bearer ' . $userAccessToken,
                 'CONTENT_TYPE' => 'application/json',
             ],
-            json_encode([
-                'response_type' => 'code',
-                'client_id' => $oauth2Client->getClientId(),
-                'redirect_uri' => 'https://example.com/callback',
-                'scope' => 'openid profile email',
-                'state' => 'random-state',
-            ])
+            $authorizeRequestBody
         );
 
-        $authResponse = json_decode($browserClient->getResponse()->getContent(), true);
+        $authContent = $browserClient->getResponse()->getContent();
+        $this->assertNotFalse($authContent);
+        $authResponse = json_decode($authContent, true, 512, JSON_THROW_ON_ERROR);
+        $this->assertIsArray($authResponse);
+        $this->assertArrayHasKey('code', $authResponse);
         $authCode = $authResponse['code'];
 
         // Exchange code for token
@@ -522,7 +615,11 @@ final class OAuth2FlowTest extends WebTestCase
             ]
         );
 
-        $tokenResponse = json_decode($browserClient->getResponse()->getContent(), true);
+        $tokenContent = $browserClient->getResponse()->getContent();
+        $this->assertNotFalse($tokenContent);
+        $tokenResponse = json_decode($tokenContent, true, 512, JSON_THROW_ON_ERROR);
+        $this->assertIsArray($tokenResponse);
+        $this->assertArrayHasKey('access_token', $tokenResponse);
         $accessToken = $tokenResponse['access_token'];
 
         // Introspect token
@@ -541,8 +638,12 @@ final class OAuth2FlowTest extends WebTestCase
 
         $this->assertResponseIsSuccessful();
 
-        $introspectResponse = json_decode($browserClient->getResponse()->getContent(), true);
+        $introspectContent = $browserClient->getResponse()->getContent();
+        $this->assertNotFalse($introspectContent);
+        $introspectResponse = json_decode($introspectContent, true, 512, JSON_THROW_ON_ERROR);
+        $this->assertIsArray($introspectResponse);
 
+        $this->assertArrayHasKey('active', $introspectResponse);
         $this->assertTrue($introspectResponse['active']);
         $this->assertArrayHasKey('scope', $introspectResponse);
         $this->assertArrayHasKey('client_id', $introspectResponse);
@@ -573,10 +674,14 @@ final class OAuth2FlowTest extends WebTestCase
         return $user;
     }
 
+    /**
+     * @param array<string> $grantTypes
+     * @param array<string> $allowedScopes
+     */
     private function createOAuth2Client(
         string $name,
         array $grantTypes,
-        array $allowedScopes
+        array $allowedScopes,
     ): OAuth2Client {
         $container = static::getContainer();
         $clientPasswordHasher = $container->get('security.password_hasher_factory')->getPasswordHasher(OAuth2Client::class);

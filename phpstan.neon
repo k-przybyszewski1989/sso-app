@@ -16,6 +16,8 @@ parameters:
     # Additional checks
     reportUnmatchedIgnoredErrors: false
     treatPhpDocTypesAsCertain: false
+    checkExplicitMixedMissingReturn: true
+    checkImplicitMixed: true
 
 services:
     -
@@ -24,5 +26,9 @@ services:
             - phpstan.rules.rule
     -
         class: App\PHPStan\Rules\TypedConstantRule
+        tags:
+            - phpstan.rules.rule
+    -
+        class: App\PHPStan\Rules\JsonFunctionsMustThrowRule
         tags:
             - phpstan.rules.rule

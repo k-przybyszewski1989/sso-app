@@ -6,6 +6,7 @@ namespace App\EventListener;
 
 use App\Exception\InvalidCredentialsException;
 use App\Exception\OAuth2\OAuth2Exception;
+use InvalidArgumentException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,6 +15,9 @@ use Symfony\Component\HttpKernel\KernelEvents;
 
 final readonly class ExceptionSubscriber implements EventSubscriberInterface
 {
+    /**
+     * {@inheritDoc}
+     */
     public static function getSubscribedEvents(): array
     {
         return [
@@ -34,6 +38,7 @@ final readonly class ExceptionSubscriber implements EventSubscriberInterface
                 ],
                 $exception->getStatusCode()
             ));
+
             return;
         }
 
@@ -46,15 +51,16 @@ final readonly class ExceptionSubscriber implements EventSubscriberInterface
                 ],
                 Response::HTTP_UNAUTHORIZED
             ));
+
             return;
         }
 
         // Handle user registration/validation errors
-        if ($exception instanceof \InvalidArgumentException) {
+        if ($exception instanceof InvalidArgumentException) {
             // Check if it's from user registration service
-            if (str_contains($exception->getMessage(), 'already taken') ||
-                str_contains($exception->getMessage(), 'Invalid email') ||
-                str_contains($exception->getMessage(), 'Invalid username')) {
+            if (str_contains($exception->getMessage(), 'already taken')
+                || str_contains($exception->getMessage(), 'Invalid email')
+                || str_contains($exception->getMessage(), 'Invalid username')) {
                 $event->setResponse(new JsonResponse(
                     [
                         'error' => 'validation_error',
@@ -62,6 +68,7 @@ final readonly class ExceptionSubscriber implements EventSubscriberInterface
                     ],
                     Response::HTTP_BAD_REQUEST
                 ));
+
                 return;
             }
         }

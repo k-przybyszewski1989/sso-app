@@ -7,8 +7,8 @@ namespace App\Tests\Request\ParamConverter;
 use App\Request\ParamConverter\RequestArgumentResolver;
 use App\Request\ParamConverter\RequestTransform;
 use App\Request\ParamConverter\RequestValidationException;
-use Exception;
 use Iterator;
+use JsonException;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use stdClass;
@@ -119,7 +119,7 @@ final class RequestArgumentResolverTest extends TestCase
         $serializer = $this->createMock(SerializerInterface::class);
         $serializer->expects($this->once())
             ->method('deserialize')
-            ->with(json_encode($formData), stdClass::class, 'json')
+            ->with(json_encode($formData, JSON_THROW_ON_ERROR), stdClass::class, 'json')
             ->willReturn($deserializedObject);
 
         $resolver = $this->createResolver(serializer: $serializer);
@@ -142,7 +142,7 @@ final class RequestArgumentResolverTest extends TestCase
     public function testResolveHandlesDeserializationExceptionAndCreatesEmptyObject(): void
     {
         $request = new Request([], [], [], [], [], ['CONTENT_TYPE' => 'application/json'], 'invalid json');
-        $exception = new \JsonException('Syntax error', 4);
+        $exception = new JsonException('Syntax error', 4);
 
         $serializer = $this->createMock(SerializerInterface::class);
         $serializer->expects($this->never())

@@ -8,13 +8,11 @@ use App\Entity\AccessToken;
 use App\Entity\OAuth2Client;
 use App\Entity\Scope;
 use App\Entity\User;
-use App\Security\Attribute\RequireScope;
+use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Symfony\Component\Routing\Annotation\Route;
 
 final class ScopeEnforcementTest extends WebTestCase
 {
@@ -40,7 +38,7 @@ final class ScopeEnforcementTest extends WebTestCase
         foreach ($tables as $table) {
             try {
                 $connection->executeStatement("TRUNCATE TABLE {$table}");
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 // Table might not exist yet
             }
         }
@@ -101,7 +99,10 @@ final class ScopeEnforcementTest extends WebTestCase
 
         $this->assertResponseIsSuccessful();
 
-        $response = json_decode($client->getResponse()->getContent(), true);
+        $content = $client->getResponse()->getContent();
+        $this->assertNotFalse($content);
+        $response = json_decode($content, true, 512, JSON_THROW_ON_ERROR);
+        $this->assertIsArray($response);
 
         $this->assertArrayHasKey('id', $response);
         $this->assertArrayHasKey('email', $response);
@@ -144,7 +145,10 @@ final class ScopeEnforcementTest extends WebTestCase
 
         $this->assertResponseStatusCodeSame(403);
 
-        $response = json_decode($client->getResponse()->getContent(), true);
+        $content = $client->getResponse()->getContent();
+        $this->assertNotFalse($content);
+        $response = json_decode($content, true, 512, JSON_THROW_ON_ERROR);
+        $this->assertIsArray($response);
 
         $this->assertArrayHasKey('error', $response);
         $this->assertEquals('insufficient_scope', $response['error']);
@@ -180,7 +184,10 @@ final class ScopeEnforcementTest extends WebTestCase
 
         $this->assertResponseStatusCodeSame(400);
 
-        $response = json_decode($client->getResponse()->getContent(), true);
+        $content = $client->getResponse()->getContent();
+        $this->assertNotFalse($content);
+        $response = json_decode($content, true, 512, JSON_THROW_ON_ERROR);
+        $this->assertIsArray($response);
 
         $this->assertArrayHasKey('error', $response);
         $this->assertEquals('invalid_scope', $response['error']);
@@ -202,22 +209,39 @@ final class ScopeEnforcementTest extends WebTestCase
         );
 
         // Login user
+        $loginRequestBody = json_encode([
+            'email' => 'test@example.com',
+            'password' => 'password123',
+        ], JSON_THROW_ON_ERROR);
+        $this->assertNotFalse($loginRequestBody);
+
         $client->request(
             'POST',
             '/api/users/login',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            json_encode([
-                'email' => 'test@example.com',
-                'password' => 'password123',
-            ])
+            $loginRequestBody
         );
 
-        $loginResponse = json_decode($client->getResponse()->getContent(), true);
+        $loginContent = $client->getResponse()->getContent();
+        $this->assertNotFalse($loginContent);
+        $loginResponse = json_decode($loginContent, true, 512, JSON_THROW_ON_ERROR);
+        $this->assertIsArray($loginResponse);
+        $this->assertArrayHasKey('access_token', $loginResponse);
+        $this->assertIsString($loginResponse['access_token']);
         $userAccessToken = $loginResponse['access_token'];
 
         // Request authorization code with unauthorized scope
+        $authorizeRequestBody = json_encode([
+            'response_type' => 'code',
+            'client_id' => $oauth2Client->getClientId(),
+            'redirect_uri' => 'https://example.com/callback',
+            'scope' => 'openid profile email', // 'email' not allowed
+            'state' => 'random-state',
+        ], JSON_THROW_ON_ERROR);
+        $this->assertNotFalse($authorizeRequestBody);
+
         $client->request(
             'POST',
             '/oauth2/authorize',
@@ -227,18 +251,15 @@ final class ScopeEnforcementTest extends WebTestCase
                 'HTTP_AUTHORIZATION' => 'Bearer ' . $userAccessToken,
                 'CONTENT_TYPE' => 'application/json',
             ],
-            json_encode([
-                'response_type' => 'code',
-                'client_id' => $oauth2Client->getClientId(),
-                'redirect_uri' => 'https://example.com/callback',
-                'scope' => 'openid profile email', // 'email' not allowed
-                'state' => 'random-state',
-            ])
+            $authorizeRequestBody
         );
 
         $this->assertResponseStatusCodeSame(400);
 
-        $response = json_decode($client->getResponse()->getContent(), true);
+        $content = $client->getResponse()->getContent();
+        $this->assertNotFalse($content);
+        $response = json_decode($content, true, 512, JSON_THROW_ON_ERROR);
+        $this->assertIsArray($response);
 
         $this->assertArrayHasKey('error', $response);
         $this->assertEquals('invalid_scope', $response['error']);
@@ -312,7 +333,10 @@ final class ScopeEnforcementTest extends WebTestCase
 
         $this->assertResponseIsSuccessful();
 
-        $response = json_decode($client->getResponse()->getContent(), true);
+        $content = $client->getResponse()->getContent();
+        $this->assertNotFalse($content);
+        $response = json_decode($content, true, 512, JSON_THROW_ON_ERROR);
+        $this->assertIsArray($response);
 
         $this->assertArrayHasKey('access_token', $response);
     }
@@ -338,10 +362,14 @@ final class ScopeEnforcementTest extends WebTestCase
         return $user;
     }
 
+    /**
+     * @param array<string> $grantTypes
+     * @param array<string> $allowedScopes
+     */
     private function createOAuth2Client(
         string $name,
         array $grantTypes,
-        array $allowedScopes
+        array $allowedScopes,
     ): OAuth2Client {
         $container = static::getContainer();
         $clientPasswordHasher = $container->get('security.password_hasher_factory')->getPasswordHasher(OAuth2Client::class);
@@ -363,16 +391,19 @@ final class ScopeEnforcementTest extends WebTestCase
         return $client;
     }
 
+    /**
+     * @param array<string> $scopes
+     */
     private function createAccessToken(
         OAuth2Client $client,
         User $user,
-        array $scopes
+        array $scopes,
     ): AccessToken {
         $container = static::getContainer();
         $entityManager = $container->get(EntityManagerInterface::class);
 
         $tokenString = bin2hex(random_bytes(32));
-        $expiresAt = new \DateTimeImmutable('+1 hour');
+        $expiresAt = new DateTimeImmutable('+1 hour');
 
         $token = new AccessToken($tokenString, $client, $expiresAt);
         $token->setUser($user);
@@ -384,5 +415,4 @@ final class ScopeEnforcementTest extends WebTestCase
 
         return $token;
     }
-
 }

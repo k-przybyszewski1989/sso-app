@@ -8,6 +8,7 @@ use App\Entity\OAuth2Client;
 use App\Entity\Scope;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
@@ -35,7 +36,7 @@ final class UserFlowTest extends WebTestCase
         foreach ($tables as $table) {
             try {
                 $connection->executeStatement("TRUNCATE TABLE {$table}");
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 // Table might not exist yet
             }
         }
@@ -73,22 +74,29 @@ final class UserFlowTest extends WebTestCase
         );
 
         // Register user
+        $registerRequestBody = json_encode([
+            'email' => 'newuser@example.com',
+            'username' => 'newuser',
+            'password' => 'SecurePass123!',
+        ], JSON_THROW_ON_ERROR);
+
+        $this->assertNotFalse($registerRequestBody);
+
         $client->request(
             'POST',
             '/api/users/register',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            json_encode([
-                'email' => 'newuser@example.com',
-                'username' => 'newuser',
-                'password' => 'SecurePass123!',
-            ])
+            $registerRequestBody
         );
 
         $this->assertResponseIsSuccessful();
 
-        $registerResponse = json_decode($client->getResponse()->getContent(), true);
+        $registerContent = $client->getResponse()->getContent();
+        $this->assertNotFalse($registerContent);
+        $registerResponse = json_decode($registerContent, true, 512, JSON_THROW_ON_ERROR);
+        $this->assertIsArray($registerResponse);
 
         $this->assertArrayHasKey('id', $registerResponse);
         $this->assertArrayHasKey('email', $registerResponse);
@@ -97,21 +105,27 @@ final class UserFlowTest extends WebTestCase
         $this->assertEquals('newuser', $registerResponse['username']);
 
         // Login with registered user
+        $loginRequestBody = json_encode([
+            'email' => 'newuser@example.com',
+            'password' => 'SecurePass123!',
+        ], JSON_THROW_ON_ERROR);
+        $this->assertNotFalse($loginRequestBody);
+
         $client->request(
             'POST',
             '/api/users/login',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            json_encode([
-                'email' => 'newuser@example.com',
-                'password' => 'SecurePass123!',
-            ])
+            $loginRequestBody
         );
 
         $this->assertResponseIsSuccessful();
 
-        $loginResponse = json_decode($client->getResponse()->getContent(), true);
+        $loginContent = $client->getResponse()->getContent();
+        $this->assertNotFalse($loginContent);
+        $loginResponse = json_decode($loginContent, true, 512, JSON_THROW_ON_ERROR);
+        $this->assertIsArray($loginResponse);
 
         $this->assertArrayHasKey('access_token', $loginResponse);
         $this->assertArrayHasKey('token_type', $loginResponse);
@@ -135,21 +149,29 @@ final class UserFlowTest extends WebTestCase
         $user = $this->createUser('test@example.com', 'testuser', 'password123');
 
         // Login to get access token
+        $loginRequestBody = json_encode([
+            'email' => 'test@example.com',
+            'password' => 'password123',
+        ], JSON_THROW_ON_ERROR);
+        $this->assertNotFalse($loginRequestBody);
+
         $client->request(
             'POST',
             '/api/users/login',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            json_encode([
-                'email' => 'test@example.com',
-                'password' => 'password123',
-            ])
+            $loginRequestBody
         );
 
         $this->assertResponseIsSuccessful();
 
-        $loginResponse = json_decode($client->getResponse()->getContent(), true);
+        $loginContent = $client->getResponse()->getContent();
+        $this->assertNotFalse($loginContent);
+        $loginResponse = json_decode($loginContent, true, 512, JSON_THROW_ON_ERROR);
+        $this->assertIsArray($loginResponse);
+        $this->assertArrayHasKey('access_token', $loginResponse);
+        $this->assertIsString($loginResponse['access_token']);
         $accessToken = $loginResponse['access_token'];
 
         // Access protected endpoint with valid token
@@ -166,7 +188,10 @@ final class UserFlowTest extends WebTestCase
 
         $this->assertResponseIsSuccessful();
 
-        $userResponse = json_decode($client->getResponse()->getContent(), true);
+        $userContent = $client->getResponse()->getContent();
+        $this->assertNotFalse($userContent);
+        $userResponse = json_decode($userContent, true, 512, JSON_THROW_ON_ERROR);
+        $this->assertIsArray($userResponse);
 
         $this->assertArrayHasKey('id', $userResponse);
         $this->assertArrayHasKey('email', $userResponse);
@@ -191,7 +216,10 @@ final class UserFlowTest extends WebTestCase
 
         $this->assertResponseStatusCodeSame(401);
 
-        $response = json_decode($client->getResponse()->getContent(), true);
+        $content = $client->getResponse()->getContent();
+        $this->assertNotFalse($content);
+        $response = json_decode($content, true, 512, JSON_THROW_ON_ERROR);
+        $this->assertIsArray($response);
 
         $this->assertArrayHasKey('error', $response);
         $this->assertEquals('invalid_token', $response['error']);
@@ -216,7 +244,10 @@ final class UserFlowTest extends WebTestCase
 
         $this->assertResponseStatusCodeSame(401);
 
-        $response = json_decode($client->getResponse()->getContent(), true);
+        $content = $client->getResponse()->getContent();
+        $this->assertNotFalse($content);
+        $response = json_decode($content, true, 512, JSON_THROW_ON_ERROR);
+        $this->assertIsArray($response);
 
         $this->assertArrayHasKey('error', $response);
     }
@@ -237,16 +268,19 @@ final class UserFlowTest extends WebTestCase
         $user = $this->createUser('test@example.com', 'testuser', 'password123');
 
         // Attempt to login with wrong password
+        $loginRequestBody = json_encode([
+            'email' => 'test@example.com',
+            'password' => 'wrongpassword',
+        ], JSON_THROW_ON_ERROR);
+        $this->assertNotFalse($loginRequestBody);
+
         $client->request(
             'POST',
             '/api/users/login',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            json_encode([
-                'email' => 'test@example.com',
-                'password' => 'wrongpassword',
-            ])
+            $loginRequestBody
         );
 
         $this->assertResponseStatusCodeSame(401);
@@ -261,17 +295,20 @@ final class UserFlowTest extends WebTestCase
         $user = $this->createUser('test@example.com', 'testuser', 'password123');
 
         // Attempt to register with same email
+        $registerRequestBody = json_encode([
+            'email' => 'test@example.com',
+            'username' => 'differentuser',
+            'password' => 'SecurePass123!',
+        ], JSON_THROW_ON_ERROR);
+        $this->assertNotFalse($registerRequestBody);
+
         $client->request(
             'POST',
             '/api/users/register',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            json_encode([
-                'email' => 'test@example.com',
-                'username' => 'differentuser',
-                'password' => 'SecurePass123!',
-            ])
+            $registerRequestBody
         );
 
         $this->assertResponseStatusCodeSame(400);
@@ -286,17 +323,20 @@ final class UserFlowTest extends WebTestCase
         $user = $this->createUser('test@example.com', 'testuser', 'password123');
 
         // Attempt to register with same username
+        $registerRequestBody = json_encode([
+            'email' => 'different@example.com',
+            'username' => 'testuser',
+            'password' => 'SecurePass123!',
+        ], JSON_THROW_ON_ERROR);
+        $this->assertNotFalse($registerRequestBody);
+
         $client->request(
             'POST',
             '/api/users/register',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            json_encode([
-                'email' => 'different@example.com',
-                'username' => 'testuser',
-                'password' => 'SecurePass123!',
-            ])
+            $registerRequestBody
         );
 
         $this->assertResponseStatusCodeSame(400);
@@ -323,10 +363,14 @@ final class UserFlowTest extends WebTestCase
         return $user;
     }
 
+    /**
+     * @param array<string> $grantTypes
+     * @param array<string> $allowedScopes
+     */
     private function createOAuth2Client(
         string $name,
         array $grantTypes,
-        array $allowedScopes
+        array $allowedScopes,
     ): OAuth2Client {
         $container = static::getContainer();
         $clientPasswordHasher = $container->get('security.password_hasher_factory')->getPasswordHasher(OAuth2Client::class);

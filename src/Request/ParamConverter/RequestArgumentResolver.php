@@ -6,6 +6,7 @@ namespace App\Request\ParamConverter;
 
 use Psr\Log\LoggerInterface;
 use ReflectionClass;
+use RuntimeException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Controller\ValueResolverInterface;
 use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
@@ -57,6 +58,10 @@ final readonly class RequestArgumentResolver implements ValueResolverInterface
                 json_decode((string) $request->getContent(), true, 512, JSON_THROW_ON_ERROR) :
                 $request->request->all();
 
+            if (!is_array($data)) {
+                $data = [];
+            }
+
             // Add Authorization header to data if the class has an authorizationHeader property
             if (property_exists($class, 'authorizationHeader')) {
                 $authHeader = $request->headers->get('Authorization');
@@ -67,7 +72,13 @@ final readonly class RequestArgumentResolver implements ValueResolverInterface
             }
 
             $encoded = json_encode($data, JSON_THROW_ON_ERROR);
-            $object = $this->serializer->deserialize($encoded, $class, 'json');
+            $deserialized = $this->serializer->deserialize($encoded, $class, 'json');
+
+            if (!is_object($deserialized)) {
+                throw new RuntimeException('Deserialization did not return an object');
+            }
+
+            $object = $deserialized;
         } catch (Throwable $exception) {
             $this->logger->error('Request input deserialization exception', [
                 'exception' => $exception,

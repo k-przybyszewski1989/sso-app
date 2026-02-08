@@ -89,6 +89,7 @@ This is a **specification-driven development toolkit** (SpecKit) that provides a
 - Ensure explicit types throughout; avoid `mixed`/`object`-like patterns
 - Match PSR-12 formatting; keep code readable with descriptive names
 - Use PHPDoc for typing only - avoid unnecessary comments explaining what a method does (this should be part of the function name instead)
+- Always use the `JSON_THROW_ON_ERROR` flag when encoding/decoding JSON strings
 
 ## File Scaffolding Checklist (per class type)
 
