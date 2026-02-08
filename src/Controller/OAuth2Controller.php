@@ -15,6 +15,7 @@ use App\Service\OAuth2\AccessTokenServiceInterface;
 use App\Service\OAuth2\AuthorizationCodeServiceInterface;
 use App\Service\OAuth2\OAuth2ServiceInterface;
 use App\Service\OAuth2\RefreshTokenServiceInterface;
+use App\Service\OAuth2\ScopeValidationServiceInterface;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -30,6 +31,7 @@ final class OAuth2Controller extends AbstractController
         private readonly AccessTokenServiceInterface $accessTokenService,
         private readonly RefreshTokenServiceInterface $refreshTokenService,
         private readonly OAuth2ClientRepositoryInterface $clientRepository,
+        private readonly ScopeValidationServiceInterface $scopeValidationService,
     ) {
     }
 
@@ -44,14 +46,20 @@ final class OAuth2Controller extends AbstractController
         $client = $this->clientRepository->getByClientId($request->clientId);
 
         // Parse scopes
-        $scopes = $request->scope ? explode(' ', $request->scope) : [];
+        $requestedScopes = $request->scope ? explode(' ', $request->scope) : [];
+
+        // Validate scopes
+        $validatedScopes = $this->scopeValidationService->validate(
+            $requestedScopes,
+            $client->getAllowedScopes()
+        );
 
         // Create authorization code
         $authCode = $this->authorizationCodeService->createAuthorizationCode(
             $client,
             $user,
             $request->redirectUri,
-            $scopes,
+            $validatedScopes,
             $request->codeChallenge,
             $request->codeChallengeMethod,
         );

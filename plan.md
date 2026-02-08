@@ -433,11 +433,11 @@ All DTOs: `final readonly class` with Symfony validation constraints
 - [x] `tests/Repository/DoctrineAuthorizationCodeRepositoryTest.php` - Test CRUD, deleteExpired
 - [x] `tests/Repository/DoctrineScopeRepositoryTest.php` - Test CRUD, findByIdentifiers, findDefaults
 
-### Phase 15: Integration Tests
+### Phase 15: Integration Tests ✅
 
 **Test complete OAuth2 flows end-to-end (`final class *Test extends WebTestCase`):**
 
-- [ ] `tests/Integration/OAuth2FlowTest.php` - Test all three grant types:
+- [x] `tests/Integration/OAuth2FlowTest.php` - Test all three grant types:
     - `testClientCredentialsFlow()` - Create client, request token, verify response
     - `testAuthorizationCodeFlow()` - Create client, get auth code, exchange for token, verify refresh token
     - `testRefreshTokenFlow()` - Get initial tokens, use refresh token to get new tokens
@@ -445,14 +445,22 @@ All DTOs: `final readonly class` with Symfony validation constraints
     - `testTokenRevocation()` - Create token, revoke it, verify it's invalid
     - `testTokenIntrospection()` - Create token, introspect it, verify metadata
 
-- [ ] `tests/Integration/UserFlowTest.php` - Test user management:
+- [x] `tests/Integration/UserFlowTest.php` - Test user management:
     - `testUserRegistrationAndLogin()` - Register user, login, get token
     - `testProtectedEndpointAccess()` - Access /api/users/me with valid token
     - `testUnauthorizedAccess()` - Access protected endpoint without token
+    - `testUnauthorizedAccessWithInvalidToken()` - Access with invalid token
+    - `testLoginWithInvalidCredentials()` - Login with wrong password
+    - `testRegistrationWithDuplicateEmail()` - Duplicate email validation
+    - `testRegistrationWithDuplicateUsername()` - Duplicate username validation
 
-- [ ] `tests/Integration/ScopeEnforcementTest.php` - Test scope-based authorization:
+- [x] `tests/Integration/ScopeEnforcementTest.php` - Test scope-based authorization:
     - `testAccessWithSufficientScopes()` - Access endpoint with required scopes
     - `testAccessWithInsufficientScopes()` - Verify 403 when scopes missing
+    - `testClientCredentialsWithLimitedScopes()` - Scope validation during token request
+    - `testAuthorizationCodeWithScopeValidation()` - Scope validation during authorization
+    - `testMultipleScopesRequired()` - Multiple scope requirements
+    - `testNoScopeRequired()` - Endpoints without scope requirements
 
 ---
 

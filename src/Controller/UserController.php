@@ -10,6 +10,7 @@ use App\Request\ParamConverter\RequestTransform;
 use App\Request\User\LoginUserRequest;
 use App\Request\User\RegisterUserRequest;
 use App\Response\User\UserResponse;
+use App\Security\Attribute\RequireScope;
 use App\Service\OAuth2\AccessTokenServiceInterface;
 use App\Service\User\UserAuthenticationServiceInterface;
 use App\Service\User\UserRegistrationServiceInterface;
@@ -93,6 +94,7 @@ final class UserController extends AbstractController
     }
 
     #[Route('/me', name: 'user_me', methods: ['GET'])]
+    #[RequireScope('profile')]
     public function me(
         #[CurrentUser]
         User $user,

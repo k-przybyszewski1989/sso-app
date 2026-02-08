@@ -25,7 +25,12 @@
       "Bash(bin/console dbal:run-sql:*)",
       "Bash(bin/console doctrine:schema:validate:*)",
       "Bash(bin/console doctrine:migrations:status:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(git diff:*)",
+      "Bash(vendor/bin/phpunit:*)",
+      "Bash(vendor/bin/php-cs-fixer:*)",
+      "Bash(./vendor/bin/phpunit:*)",
+      "Bash(php -r:*)"
     ]
   }
 }

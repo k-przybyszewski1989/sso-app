@@ -53,10 +53,20 @@ final readonly class RequestArgumentResolver implements ValueResolverInterface
     private function deserialize(RequestTransform $attribute, Request $request, string $class): object
     {
         try {
-            $encoded = 'json' === $request->getContentTypeFormat() ?
-                (string) $request->getContent() :
-                (string) json_encode($request->request->all(), JSON_THROW_ON_ERROR);
+            $data = 'json' === $request->getContentTypeFormat() ?
+                json_decode((string) $request->getContent(), true, 512, JSON_THROW_ON_ERROR) :
+                $request->request->all();
 
+            // Add Authorization header to data if the class has an authorizationHeader property
+            if (property_exists($class, 'authorizationHeader')) {
+                $authHeader = $request->headers->get('Authorization');
+                if (null !== $authHeader && !isset($data['authorization_header']) && !isset($data['authorizationHeader'])) {
+                    // Use snake_case key since the name converter will convert it to camelCase
+                    $data['authorization_header'] = $authHeader;
+                }
+            }
+
+            $encoded = json_encode($data, JSON_THROW_ON_ERROR);
             $object = $this->serializer->deserialize($encoded, $class, 'json');
         } catch (Throwable $exception) {
             $this->logger->error('Request input deserialization exception', [

@@ -36,7 +36,7 @@ final class DoctrineUserRepositoryTest extends KernelTestCase
 
     public function testSaveAndFindById(): void
     {
-        $user = new User('test@example.com', 'testuser', 'password');
+        $user = new User('test10@example.com', 'testuser10', 'password');
         $this->repository->save($user);
         $this->entityManager->flush();
 
@@ -44,8 +44,8 @@ final class DoctrineUserRepositoryTest extends KernelTestCase
 
         $this->assertNotNull($foundUser);
         $this->assertSame($user->getId(), $foundUser->getId());
-        $this->assertSame('test@example.com', $foundUser->getEmail());
-        $this->assertSame('testuser', $foundUser->getUsername());
+        $this->assertSame('test10@example.com', $foundUser->getEmail());
+        $this->assertSame('testuser10', $foundUser->getUsername());
     }
 
     public function testFindByIdReturnsNullWhenNotFound(): void
@@ -57,14 +57,14 @@ final class DoctrineUserRepositoryTest extends KernelTestCase
 
     public function testGetById(): void
     {
-        $user = new User('test@example.com', 'testuser', 'password');
+        $user = new User('test11@example.com', 'testuser11', 'password');
         $this->repository->save($user);
         $this->entityManager->flush();
 
         $foundUser = $this->repository->getById($user->getId());
 
         $this->assertSame($user->getId(), $foundUser->getId());
-        $this->assertSame('test@example.com', $foundUser->getEmail());
+        $this->assertSame('test11@example.com', $foundUser->getEmail());
     }
 
     public function testGetByIdThrowsExceptionWhenNotFound(): void

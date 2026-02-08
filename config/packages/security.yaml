@@ -24,6 +24,11 @@ security:
             stateless: true
             security: false
 
+        api_public:
+            pattern: ^/api/users/(register|login)
+            stateless: true
+            security: false
+
         api:
             pattern: ^/api
             stateless: true
@@ -56,3 +61,6 @@ when@test:
                 cost: 4 # Lowest possible value for bcrypt
                 time_cost: 3 # Lowest possible value for argon
                 memory_cost: 10 # Lowest possible value for argon
+            App\Entity\OAuth2Client:
+                algorithm: bcrypt
+                cost: 4 # Lowest possible value for bcrypt

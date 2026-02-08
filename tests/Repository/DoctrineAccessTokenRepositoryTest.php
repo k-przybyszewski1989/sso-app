@@ -31,7 +31,10 @@ final class DoctrineAccessTokenRepositoryTest extends KernelTestCase
 
     protected function tearDown(): void
     {
-        $this->entityManager->rollback();
+        if ($this->entityManager->getConnection()->isTransactionActive()) {
+            $this->entityManager->rollback();
+        }
+        $this->entityManager->clear();
         $this->entityManager->close();
 
         parent::tearDown();
@@ -90,7 +93,7 @@ final class DoctrineAccessTokenRepositoryTest extends KernelTestCase
         $client = new OAuth2Client('client_789', 'secret', 'Test Client');
         $this->entityManager->persist($client);
 
-        $user = new User('user@example.com', 'testuser', 'password');
+        $user = new User('findbyuser@example.com', 'testuser_findbyuser', 'password');
         $this->entityManager->persist($user);
 
         $expiresAt = new DateTimeImmutable('+1 hour');

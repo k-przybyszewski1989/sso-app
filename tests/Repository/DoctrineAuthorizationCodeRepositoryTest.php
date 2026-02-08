@@ -40,7 +40,7 @@ final class DoctrineAuthorizationCodeRepositoryTest extends KernelTestCase
     public function testSaveAndFindByCode(): void
     {
         $client = new OAuth2Client('client_123', 'secret', 'Test Client');
-        $user = new User('user@example.com', 'testuser', 'password');
+        $user = new User('user0@example.com', 'testuser0', 'password');
         $this->entityManager->persist($client);
         $this->entityManager->persist($user);
 

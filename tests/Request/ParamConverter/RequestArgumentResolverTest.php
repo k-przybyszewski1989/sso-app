@@ -142,12 +142,11 @@ final class RequestArgumentResolverTest extends TestCase
     public function testResolveHandlesDeserializationExceptionAndCreatesEmptyObject(): void
     {
         $request = new Request([], [], [], [], [], ['CONTENT_TYPE' => 'application/json'], 'invalid json');
-        $exception = new Exception('Deserialization failed');
+        $exception = new \JsonException('Syntax error', 4);
 
         $serializer = $this->createMock(SerializerInterface::class);
-        $serializer->expects($this->once())
-            ->method('deserialize')
-            ->willThrowException($exception);
+        $serializer->expects($this->never())
+            ->method('deserialize');
 
         $logger = $this->createMock(LoggerInterface::class);
         $logger->expects($this->once())

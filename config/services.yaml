@@ -42,5 +42,13 @@ services:
         arguments:
             $grantHandlers: !tagged_iterator app.oauth2.grant_handler
 
+    # Configure custom name converter for serializer
+    app.serializer.name_converter:
+        class: Symfony\Component\Serializer\NameConverter\MetadataAwareNameConverter
+        arguments:
+            - '@serializer.mapping.class_metadata_factory'
+            - !service
+                class: Symfony\Component\Serializer\NameConverter\CamelCaseToSnakeCaseNameConverter
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

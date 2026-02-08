@@ -31,7 +31,10 @@ final class DoctrineRefreshTokenRepositoryTest extends KernelTestCase
 
     protected function tearDown(): void
     {
-        $this->entityManager->rollback();
+        if ($this->entityManager->getConnection()->isTransactionActive()) {
+            $this->entityManager->rollback();
+        }
+        $this->entityManager->clear();
         $this->entityManager->close();
 
         parent::tearDown();
@@ -40,7 +43,7 @@ final class DoctrineRefreshTokenRepositoryTest extends KernelTestCase
     public function testSaveAndFindByToken(): void
     {
         $client = new OAuth2Client('client_123', 'secret', 'Test Client');
-        $user = new User('user@example.com', 'testuser', 'password');
+        $user = new User('refreshtoken_save@example.com', 'testuser_refreshsave', 'password');
         $this->entityManager->persist($client);
         $this->entityManager->persist($user);
 
@@ -92,7 +95,7 @@ final class DoctrineRefreshTokenRepositoryTest extends KernelTestCase
     public function testFindByUser(): void
     {
         $client = new OAuth2Client('client_789', 'secret', 'Test Client');
-        $user = new User('user3@example.com', 'testuser3', 'password');
+        $user = new User('refreshtoken_findbyuser@example.com', 'testuser_refreshfindbyuser', 'password');
         $this->entityManager->persist($client);
         $this->entityManager->persist($user);
 
