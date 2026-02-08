@@ -67,6 +67,8 @@ final readonly class ClientAuthenticationService implements ClientAuthentication
             return null;
         }
 
+        $decoded = trim($decoded);
+
         $parts = explode(':', $decoded, 2);
         if (2 !== count($parts)) {
             return null;
