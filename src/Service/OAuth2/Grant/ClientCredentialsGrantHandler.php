@@ -16,7 +16,7 @@ use App\Service\OAuth2\ScopeValidationServiceInterface;
 
 final readonly class ClientCredentialsGrantHandler implements GrantHandlerInterface
 {
-    private const string GRANT_TYPE = GrantType::CLIENT_CREDENTIALS->value;
+    private const GrantType GRANT_TYPE = GrantType::CLIENT_CREDENTIALS;
 
     public function __construct(
         private ClientAuthenticationServiceInterface $clientAuthenticationService,
@@ -30,7 +30,7 @@ final readonly class ClientCredentialsGrantHandler implements GrantHandlerInterf
      */
     public function supports(string $grantType): bool
     {
-        return self::GRANT_TYPE === $grantType;
+        return self::GRANT_TYPE->value === $grantType;
     }
 
     /**

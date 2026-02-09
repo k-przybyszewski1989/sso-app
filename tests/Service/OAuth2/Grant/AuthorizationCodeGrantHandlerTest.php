@@ -53,7 +53,7 @@ final class AuthorizationCodeGrantHandlerTest extends TestCase
         );
 
         $client = new OAuth2Client('test_client', 'hashed_secret', 'Test Client');
-        $client->setGrantTypes(['authorization_code']);
+        $client->setGrantTypes([GrantType::AUTHORIZATION_CODE]);
 
         $user = new User('test@example.com', 'testuser', 'password');
         $expiresAt = new DateTimeImmutable('+10 minutes');
@@ -113,7 +113,7 @@ final class AuthorizationCodeGrantHandlerTest extends TestCase
         );
 
         $client = new OAuth2Client('test_client', 'hashed_secret', 'Test Client');
-        $client->setGrantTypes(['authorization_code', 'refresh_token']);
+        $client->setGrantTypes([GrantType::AUTHORIZATION_CODE, GrantType::REFRESH_TOKEN]);
 
         $user = new User('test@example.com', 'testuser', 'password');
         $expiresAt = new DateTimeImmutable('+10 minutes');
@@ -173,7 +173,7 @@ final class AuthorizationCodeGrantHandlerTest extends TestCase
         );
 
         $client = new OAuth2Client('test_client', 'hashed_secret', 'Test Client');
-        $client->setGrantTypes(['client_credentials']);
+        $client->setGrantTypes([GrantType::CLIENT_CREDENTIALS]);
 
         $clientAuthService = $this->createMock(ClientAuthenticationServiceInterface::class);
         $clientAuthService->expects($this->once())
@@ -207,7 +207,7 @@ final class AuthorizationCodeGrantHandlerTest extends TestCase
         );
 
         $client = new OAuth2Client('test_client', 'hashed_secret', 'Test Client');
-        $client->setGrantTypes(['authorization_code']);
+        $client->setGrantTypes([GrantType::AUTHORIZATION_CODE]);
 
         $clientAuthService = $this->createMock(ClientAuthenticationServiceInterface::class);
         $clientAuthService->expects($this->once())
@@ -241,7 +241,7 @@ final class AuthorizationCodeGrantHandlerTest extends TestCase
         );
 
         $client = new OAuth2Client('test_client', 'hashed_secret', 'Test Client');
-        $client->setGrantTypes(['authorization_code']);
+        $client->setGrantTypes([GrantType::AUTHORIZATION_CODE]);
 
         $clientAuthService = $this->createMock(ClientAuthenticationServiceInterface::class);
         $clientAuthService->expects($this->once())

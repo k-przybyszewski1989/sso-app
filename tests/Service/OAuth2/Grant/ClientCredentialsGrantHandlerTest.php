@@ -47,7 +47,7 @@ final class ClientCredentialsGrantHandlerTest extends TestCase
         );
 
         $client = new OAuth2Client('test_client', 'hashed_secret', 'Test Client');
-        $client->setGrantTypes(['client_credentials']);
+        $client->setGrantTypes([GrantType::CLIENT_CREDENTIALS]);
         $client->setAllowedScopes(['read', 'write', 'admin']);
 
         $expiresAt = new DateTimeImmutable('+1 hour');
@@ -96,7 +96,7 @@ final class ClientCredentialsGrantHandlerTest extends TestCase
         );
 
         $client = new OAuth2Client('test_client', 'hashed_secret', 'Test Client');
-        $client->setGrantTypes(['authorization_code']);
+        $client->setGrantTypes([GrantType::AUTHORIZATION_CODE]);
 
         $clientAuthService = $this->createMock(ClientAuthenticationServiceInterface::class);
         $clientAuthService->expects($this->once())
@@ -127,7 +127,7 @@ final class ClientCredentialsGrantHandlerTest extends TestCase
         );
 
         $client = new OAuth2Client('test_client', 'hashed_secret', 'Test Client');
-        $client->setGrantTypes(['client_credentials']);
+        $client->setGrantTypes([GrantType::CLIENT_CREDENTIALS]);
 
         $clientAuthService = $this->createMock(ClientAuthenticationServiceInterface::class);
         $clientAuthService->expects($this->once())
@@ -159,7 +159,7 @@ final class ClientCredentialsGrantHandlerTest extends TestCase
         );
 
         $client = new OAuth2Client('test_client', 'hashed_secret', 'Test Client');
-        $client->setGrantTypes(['client_credentials']);
+        $client->setGrantTypes([GrantType::CLIENT_CREDENTIALS]);
         $client->setAllowedScopes(['read', 'write']);
 
         $clientAuthService = $this->createMock(ClientAuthenticationServiceInterface::class);

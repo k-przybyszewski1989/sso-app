@@ -39,7 +39,7 @@ final readonly class ClientManagementService implements ClientManagementServiceI
 
         // Set client properties
         $client->setRedirectUris($redirectUris);
-        $client->setGrantTypes(GrantType::toStringArray($grantTypes));
+        $client->setGrantTypes($grantTypes);
         $client->setConfidential($confidential);
 
         // Persist client
@@ -49,7 +49,7 @@ final readonly class ClientManagementService implements ClientManagementServiceI
             'clientId' => $clientId,
             'name' => $name,
             'confidential' => $confidential,
-            'grantTypes' => GrantType::toStringArray($grantTypes),
+            'grantTypes' => array_map(static fn (GrantType $type): string => $type->value, $grantTypes),
         ]);
 
         // Return client credentials (client_secret is only shown once)

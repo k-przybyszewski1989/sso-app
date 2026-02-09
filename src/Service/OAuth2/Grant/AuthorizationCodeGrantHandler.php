@@ -16,7 +16,7 @@ use App\Service\OAuth2\RefreshTokenServiceInterface;
 
 final readonly class AuthorizationCodeGrantHandler implements GrantHandlerInterface
 {
-    private const string GRANT_TYPE = GrantType::AUTHORIZATION_CODE->value;
+    private const GrantType GRANT_TYPE = GrantType::AUTHORIZATION_CODE;
 
     public function __construct(
         private ClientAuthenticationServiceInterface $clientAuthenticationService,
@@ -31,7 +31,7 @@ final readonly class AuthorizationCodeGrantHandler implements GrantHandlerInterf
      */
     public function supports(string $grantType): bool
     {
-        return GrantType::AUTHORIZATION_CODE->value === $grantType;
+        return self::GRANT_TYPE->value === $grantType;
     }
 
     /**

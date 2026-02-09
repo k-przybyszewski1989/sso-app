@@ -54,7 +54,6 @@ final class AuthorizationCodeServiceTest extends TestCase
         $service = new AuthorizationCodeService($authCodeRepository, $tokenGenerator, $pkceService);
         $code = $service->createAuthorizationCode($client, $user, $redirectUri, $scopes);
 
-        $this->assertInstanceOf(AuthorizationCode::class, $code);
         $this->assertSame($generatedCode, $code->getCode());
         $this->assertSame($scopes, $code->getScopes());
         $this->assertNull($code->getCodeChallenge());

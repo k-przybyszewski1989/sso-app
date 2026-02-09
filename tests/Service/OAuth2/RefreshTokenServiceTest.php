@@ -47,7 +47,6 @@ final class RefreshTokenServiceTest extends TestCase
         $service = new RefreshTokenService($refreshTokenRepository, $tokenGenerator);
         $token = $service->createRefreshToken($client, $user, $scopes);
 
-        $this->assertInstanceOf(RefreshToken::class, $token);
         $this->assertSame($generatedToken, $token->getToken());
         $this->assertSame($scopes, $token->getScopes());
         $this->assertSame($client, $token->getClient());

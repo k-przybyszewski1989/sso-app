@@ -58,7 +58,6 @@ final class UserRegistrationServiceTest extends TestCase
         $service = new UserRegistrationService($userRepository, $passwordHasher, $logger);
         $user = $service->registerUser($email, $username, $password);
 
-        $this->assertInstanceOf(User::class, $user);
         $this->assertSame($email, $user->getEmail());
         $this->assertSame($username, $user->getUsername());
     }

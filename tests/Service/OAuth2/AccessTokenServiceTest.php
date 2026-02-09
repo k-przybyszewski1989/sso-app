@@ -39,7 +39,6 @@ final class AccessTokenServiceTest extends TestCase
         $service = new AccessTokenService($accessTokenRepository, $tokenGenerator);
         $token = $service->createAccessToken($client, $scopes);
 
-        $this->assertInstanceOf(AccessToken::class, $token);
         $this->assertSame($generatedToken, $token->getToken());
         $this->assertSame($scopes, $token->getScopes());
         $this->assertNull($token->getUser());
@@ -65,7 +64,6 @@ final class AccessTokenServiceTest extends TestCase
         $service = new AccessTokenService($accessTokenRepository, $tokenGenerator);
         $token = $service->createAccessToken($client, $scopes, $user);
 
-        $this->assertInstanceOf(AccessToken::class, $token);
         $this->assertSame($generatedToken, $token->getToken());
         $this->assertSame($scopes, $token->getScopes());
         $this->assertSame($user, $token->getUser());

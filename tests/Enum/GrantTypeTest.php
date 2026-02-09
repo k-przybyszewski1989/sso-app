@@ -37,7 +37,6 @@ final class GrantTypeTest extends TestCase
         $enums = GrantType::fromStringArray([]);
 
         $this->assertCount(0, $enums);
-        $this->assertSame([], $enums);
     }
 
     public function testFromStringArrayThrowsExceptionForInvalidValue(): void
@@ -90,7 +89,6 @@ final class GrantTypeTest extends TestCase
         $strings = GrantType::toStringArray([]);
 
         $this->assertCount(0, $strings);
-        $this->assertSame([], $strings);
     }
 
     public function testRoundTripConversionPreservesValues(): void

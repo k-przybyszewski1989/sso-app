@@ -103,7 +103,7 @@ final class ClientManagementServiceTest extends TestCase
             ->method('save')
             ->with($this->callback(function (OAuth2Client $client) use ($redirectUris, $grantTypes) {
                 $this->assertEquals($redirectUris, $client->getRedirectUris());
-                $this->assertEquals(GrantType::toStringArray($grantTypes), $client->getGrantTypes());
+                $this->assertEquals($grantTypes, $client->getGrantTypes());
                 $this->assertFalse($client->isConfidential());
 
                 return true;

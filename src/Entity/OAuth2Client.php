@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use App\Enum\GrantType;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -40,9 +41,9 @@ class OAuth2Client implements PasswordAuthenticatedUserInterface
     private array $redirectUris = [];
 
     /**
-     * @var array<string>
+     * @var array<GrantType>
      */
-    #[ORM\Column(type: 'json')]
+    #[ORM\Column(type: 'grant_type_array')]
     private array $grantTypes = [];
 
     /**
@@ -163,7 +164,7 @@ class OAuth2Client implements PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @return array<string>
+     * @return array<GrantType>
      */
     public function getGrantTypes(): array
     {
@@ -171,7 +172,7 @@ class OAuth2Client implements PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @param array<string> $grantTypes
+     * @param array<GrantType> $grantTypes
      */
     public function setGrantTypes(array $grantTypes): void
     {

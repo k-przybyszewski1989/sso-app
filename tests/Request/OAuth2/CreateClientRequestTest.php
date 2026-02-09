@@ -48,7 +48,6 @@ final class CreateClientRequestTest extends TestCase
 
         $this->assertGreaterThan(0, $violations->count());
         $firstViolation = $violations->get(0);
-        $this->assertInstanceOf(\Symfony\Component\Validator\ConstraintViolationInterface::class, $firstViolation);
         $message = $firstViolation->getMessage();
         $this->assertStringContainsString('blank', strtolower((string) $message));
     }

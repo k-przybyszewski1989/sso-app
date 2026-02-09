@@ -8,6 +8,7 @@ use App\Entity\AccessToken;
 use App\Entity\OAuth2Client;
 use App\Entity\Scope;
 use App\Entity\User;
+use App\Enum\GrantType;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
@@ -380,7 +381,7 @@ final class ScopeEnforcementTest extends WebTestCase
 
         $client = new OAuth2Client($clientId, $clientSecretHash, $name);
         $client->setRedirectUris(['https://example.com/callback']);
-        $client->setGrantTypes($grantTypes);
+        $client->setGrantTypes(GrantType::fromStringArray($grantTypes));
         $client->setAllowedScopes($allowedScopes);
         $client->setConfidential(true);
         $client->setActive(true);
