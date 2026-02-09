@@ -10,11 +10,13 @@ use RuntimeException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Controller\ValueResolverInterface;
 use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
+use Symfony\Component\Serializer\Exception\InvalidArgumentException;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Throwable;
+use ValueError;
 
 use function class_exists;
 use function interface_exists;
@@ -79,6 +81,15 @@ final readonly class RequestArgumentResolver implements ValueResolverInterface
             }
 
             $object = $deserialized;
+        } catch (InvalidArgumentException $e) {
+            if (!$e->getPrevious() instanceof ValueError) {
+                throw $e;
+            }
+
+            throw new RequestValidationException([[
+                'path' => 'body',
+                'message' => $e->getPrevious()->getMessage(),
+            ]]);
         } catch (Throwable $exception) {
             $this->logger->error('Request input deserialization exception', [
                 'exception' => $exception,
