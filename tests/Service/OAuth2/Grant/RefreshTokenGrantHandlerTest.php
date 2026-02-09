@@ -8,6 +8,7 @@ use App\Entity\AccessToken;
 use App\Entity\OAuth2Client;
 use App\Entity\RefreshToken;
 use App\Entity\User;
+use App\Enum\GrantType;
 use App\Exception\OAuth2\InvalidRequestException;
 use App\Exception\OAuth2\InvalidScopeException;
 use App\Exception\OAuth2\UnauthorizedClientException;
@@ -41,14 +42,14 @@ final class RefreshTokenGrantHandlerTest extends TestCase
     public function testHandleSuccessfullyWithSameScopes(): void
     {
         $request = new TokenRequest(
-            grantType: 'refresh_token',
+            grantType: GrantType::REFRESH_TOKEN,
             refreshToken: 'old_refresh_token',
             clientId: 'test_client',
             clientSecret: 'test_secret'
         );
 
         $client = new OAuth2Client('test_client', 'hashed_secret', 'Test Client');
-        $client->setGrantTypes(['authorization_code', 'refresh_token']);
+        $client->setGrantTypes([GrantType::AUTHORIZATION_CODE, GrantType::REFRESH_TOKEN]);
 
         $user = new User('test@example.com', 'testuser', 'password');
 
@@ -101,7 +102,7 @@ final class RefreshTokenGrantHandlerTest extends TestCase
     public function testHandleSuccessfullyWithNarrowedScopes(): void
     {
         $request = new TokenRequest(
-            grantType: 'refresh_token',
+            grantType: GrantType::REFRESH_TOKEN,
             refreshToken: 'old_refresh_token',
             clientId: 'test_client',
             clientSecret: 'test_secret',
@@ -109,7 +110,7 @@ final class RefreshTokenGrantHandlerTest extends TestCase
         );
 
         $client = new OAuth2Client('test_client', 'hashed_secret', 'Test Client');
-        $client->setGrantTypes(['authorization_code', 'refresh_token']);
+        $client->setGrantTypes([GrantType::AUTHORIZATION_CODE, GrantType::REFRESH_TOKEN]);
 
         $user = new User('test@example.com', 'testuser', 'password');
 
@@ -154,14 +155,14 @@ final class RefreshTokenGrantHandlerTest extends TestCase
     public function testHandleThrowsExceptionWhenClientNotAuthorizedForGrantType(): void
     {
         $request = new TokenRequest(
-            grantType: 'refresh_token',
+            grantType: GrantType::REFRESH_TOKEN,
             refreshToken: 'old_refresh_token',
             clientId: 'test_client',
             clientSecret: 'test_secret'
         );
 
         $client = new OAuth2Client('test_client', 'hashed_secret', 'Test Client');
-        $client->setGrantTypes(['client_credentials']);
+        $client->setGrantTypes([GrantType::CLIENT_CREDENTIALS]);
 
         $clientAuthService = $this->createMock(ClientAuthenticationServiceInterface::class);
         $clientAuthService->expects($this->once())
@@ -186,13 +187,13 @@ final class RefreshTokenGrantHandlerTest extends TestCase
     public function testHandleThrowsExceptionWhenRefreshTokenMissing(): void
     {
         $request = new TokenRequest(
-            grantType: 'refresh_token',
+            grantType: GrantType::REFRESH_TOKEN,
             clientId: 'test_client',
             clientSecret: 'test_secret'
         );
 
         $client = new OAuth2Client('test_client', 'hashed_secret', 'Test Client');
-        $client->setGrantTypes(['refresh_token']);
+        $client->setGrantTypes([GrantType::REFRESH_TOKEN]);
 
         $clientAuthService = $this->createMock(ClientAuthenticationServiceInterface::class);
         $clientAuthService->expects($this->once())
@@ -217,7 +218,7 @@ final class RefreshTokenGrantHandlerTest extends TestCase
     public function testHandleThrowsExceptionWhenRequestedScopesExceedOriginal(): void
     {
         $request = new TokenRequest(
-            grantType: 'refresh_token',
+            grantType: GrantType::REFRESH_TOKEN,
             refreshToken: 'old_refresh_token',
             clientId: 'test_client',
             clientSecret: 'test_secret',
@@ -225,7 +226,7 @@ final class RefreshTokenGrantHandlerTest extends TestCase
         );
 
         $client = new OAuth2Client('test_client', 'hashed_secret', 'Test Client');
-        $client->setGrantTypes(['refresh_token']);
+        $client->setGrantTypes([GrantType::REFRESH_TOKEN]);
 
         $user = new User('test@example.com', 'testuser', 'password');
 

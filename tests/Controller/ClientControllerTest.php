@@ -7,6 +7,7 @@ namespace App\Tests\Controller;
 use App\Entity\OAuth2Client;
 use App\Entity\Scope;
 use App\Entity\User;
+use App\Enum\GrantType;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -50,7 +51,7 @@ final class ClientControllerTest extends WebTestCase
         // Create a default OAuth2 client required for login
         $defaultClient = new OAuth2Client('default-test-client', 'hashed-secret', 'Default Test Client');
         $defaultClient->setRedirectUris(['https://example.com/callback']);
-        $defaultClient->setGrantTypes(['authorization_code', 'client_credentials']);
+        $defaultClient->setGrantTypes([GrantType::AUTHORIZATION_CODE, GrantType::CLIENT_CREDENTIALS]);
         $defaultClient->setConfidential(true);
         $defaultClient->setActive(true);
         $entityManager->persist($defaultClient);
@@ -522,7 +523,7 @@ final class ClientControllerTest extends WebTestCase
     {
         $client = new OAuth2Client($clientId, 'hashed-secret', $name);
         $client->setRedirectUris(['https://example.com/callback']);
-        $client->setGrantTypes(['authorization_code', 'client_credentials']);
+        $client->setGrantTypes([GrantType::AUTHORIZATION_CODE, GrantType::CLIENT_CREDENTIALS]);
         $client->setConfidential(true);
         $client->setActive(true);
 

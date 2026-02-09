@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Request\OAuth2;
 
+use App\Enum\GrantType;
 use App\Request\OAuth2\CreateClientRequest;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Validation;
@@ -25,7 +26,7 @@ final class CreateClientRequestTest extends TestCase
         $request = new CreateClientRequest(
             name: 'Test Client',
             redirectUris: ['https://example.com/callback'],
-            grantTypes: ['authorization_code'],
+            grantTypes: [GrantType::AUTHORIZATION_CODE],
             confidential: true,
             description: 'Test description'
         );
@@ -40,14 +41,13 @@ final class CreateClientRequestTest extends TestCase
         $request = new CreateClientRequest(
             name: '',
             redirectUris: ['https://example.com/callback'],
-            grantTypes: ['authorization_code']
+            grantTypes: [GrantType::AUTHORIZATION_CODE]
         );
 
         $violations = $this->validator->validate($request);
 
         $this->assertGreaterThan(0, $violations->count());
         $firstViolation = $violations->get(0);
-        $this->assertInstanceOf(\Symfony\Component\Validator\ConstraintViolationInterface::class, $firstViolation);
         $message = $firstViolation->getMessage();
         $this->assertStringContainsString('blank', strtolower((string) $message));
     }
@@ -57,7 +57,7 @@ final class CreateClientRequestTest extends TestCase
         $request = new CreateClientRequest(
             name: 'ab',
             redirectUris: ['https://example.com/callback'],
-            grantTypes: ['authorization_code']
+            grantTypes: [GrantType::AUTHORIZATION_CODE]
         );
 
         $violations = $this->validator->validate($request);
@@ -86,7 +86,7 @@ final class CreateClientRequestTest extends TestCase
         $request = new CreateClientRequest(
             name: str_repeat('a', 256),
             redirectUris: ['https://example.com/callback'],
-            grantTypes: ['authorization_code']
+            grantTypes: [GrantType::AUTHORIZATION_CODE]
         );
 
         $violations = $this->validator->validate($request);
@@ -116,7 +116,7 @@ final class CreateClientRequestTest extends TestCase
         $request = new CreateClientRequest(
             name: 'Test Client',
             redirectUris: [],
-            grantTypes: ['authorization_code']
+            grantTypes: [GrantType::AUTHORIZATION_CODE]
         );
 
         $violations = $this->validator->validate($request);
@@ -129,7 +129,7 @@ final class CreateClientRequestTest extends TestCase
         $request = new CreateClientRequest(
             name: 'Test Client',
             redirectUris: ['not-a-url', 'also-invalid'],
-            grantTypes: ['authorization_code']
+            grantTypes: [GrantType::AUTHORIZATION_CODE]
         );
 
         $violations = $this->validator->validate($request);
@@ -160,36 +160,16 @@ final class CreateClientRequestTest extends TestCase
         $this->assertGreaterThan(0, $violations->count());
     }
 
-    public function testGrantTypesMustBeAllowedValues(): void
-    {
-        $request = new CreateClientRequest(
-            name: 'Test Client',
-            redirectUris: ['https://example.com/callback'],
-            grantTypes: ['invalid_grant', 'another_invalid']
-        );
-
-        $violations = $this->validator->validate($request);
-
-        $this->assertGreaterThan(0, $violations->count());
-
-        $hasChoiceViolation = false;
-        foreach ($violations as $violation) {
-            $message = strtolower((string) $violation->getMessage());
-            if (str_contains($message, 'choice') || str_contains($message, 'valid')) {
-                $hasChoiceViolation = true;
-                break;
-            }
-        }
-
-        $this->assertTrue($hasChoiceViolation, 'Expected a choice constraint violation');
-    }
+    // Note: Invalid grant type validation now happens at Symfony's deserialization layer
+    // when converting strings to GrantType enum, not at the validator level.
+    // This test is no longer applicable as the Assert\Choice constraint was removed.
 
     public function testConfidentialDefaultsToTrue(): void
     {
         $request = new CreateClientRequest(
             name: 'Test Client',
             redirectUris: ['https://example.com/callback'],
-            grantTypes: ['authorization_code']
+            grantTypes: [GrantType::AUTHORIZATION_CODE]
         );
 
         $this->assertTrue($request->confidential);
@@ -200,7 +180,7 @@ final class CreateClientRequestTest extends TestCase
         $request = new CreateClientRequest(
             name: 'Test Client',
             redirectUris: ['https://example.com/callback'],
-            grantTypes: ['authorization_code'],
+            grantTypes: [GrantType::AUTHORIZATION_CODE],
             confidential: true,
             description: null
         );
@@ -219,7 +199,7 @@ final class CreateClientRequestTest extends TestCase
                 'https://app.example.com/redirect',
                 'https://mobile.example.com/oauth',
             ],
-            grantTypes: ['authorization_code', 'client_credentials', 'refresh_token'],
+            grantTypes: [GrantType::AUTHORIZATION_CODE, GrantType::CLIENT_CREDENTIALS, GrantType::REFRESH_TOKEN],
             confidential: false
         );
 

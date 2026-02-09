@@ -92,6 +92,7 @@ This is a **specification-driven development toolkit** (SpecKit) that provides a
 - Always use the `JSON_THROW_ON_ERROR` flag when encoding/decoding JSON strings
 - Always use `yoda_style` comparisons
 - Always use `#[AllowMockObjectsWithoutExpectations]` attribute on test classes
+- Prefer enum over string for class properties i.e. instead of `string $grantType` use `App\Enum\GrantType $grantType`
 
 ## File Scaffolding Checklist (per class type)
 

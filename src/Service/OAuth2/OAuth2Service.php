@@ -33,13 +33,13 @@ final readonly class OAuth2Service implements OAuth2ServiceInterface
     public function issueToken(TokenRequest $request): TokenResponse
     {
         foreach ($this->grantHandlers as $handler) {
-            if ($handler->supports($request->grantType)) {
+            if ($handler->supports($request->grantType->value)) {
                 return $handler->handle($request);
             }
         }
 
         throw new UnsupportedGrantTypeException(
-            sprintf('Grant type "%s" is not supported', $request->grantType)
+            sprintf('Grant type "%s" is not supported', $request->grantType->value)
         );
     }
 }

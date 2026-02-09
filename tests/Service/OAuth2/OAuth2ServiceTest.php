@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Service\OAuth2;
 
+use App\Enum\GrantType;
 use App\Exception\OAuth2\UnsupportedGrantTypeException;
 use App\Request\OAuth2\TokenRequest;
 use App\Response\OAuth2\TokenResponse;
@@ -16,7 +17,7 @@ final class OAuth2ServiceTest extends TestCase
 {
     public function testIssueTokenDelegatesToCorrectHandler(): void
     {
-        $request = new TokenRequest(grantType: 'client_credentials');
+        $request = new TokenRequest(grantType: GrantType::CLIENT_CREDENTIALS);
 
         $tokenResponse = new TokenResponse(
             accessToken: 'test_token',
@@ -56,31 +57,31 @@ final class OAuth2ServiceTest extends TestCase
 
     public function testIssueTokenThrowsExceptionWhenNoHandlerSupportsGrantType(): void
     {
-        $request = new TokenRequest(grantType: 'unsupported_grant');
+        $request = new TokenRequest(grantType: GrantType::CLIENT_CREDENTIALS);
 
         $handler1 = $this->createMock(GrantHandlerInterface::class);
         $handler1->expects($this->once())
             ->method('supports')
-            ->with('unsupported_grant')
+            ->with('client_credentials')
             ->willReturn(false);
 
         $handler2 = $this->createMock(GrantHandlerInterface::class);
         $handler2->expects($this->once())
             ->method('supports')
-            ->with('unsupported_grant')
+            ->with('client_credentials')
             ->willReturn(false);
 
         $service = new OAuth2Service([$handler1, $handler2]);
 
         $this->expectException(UnsupportedGrantTypeException::class);
-        $this->expectExceptionMessage('Grant type "unsupported_grant" is not supported');
+        $this->expectExceptionMessage('Grant type "client_credentials" is not supported');
 
         $service->issueToken($request);
     }
 
     public function testIssueTokenWorksWithIterableHandlers(): void
     {
-        $request = new TokenRequest(grantType: 'authorization_code');
+        $request = new TokenRequest(grantType: GrantType::AUTHORIZATION_CODE);
 
         $tokenResponse = new TokenResponse(
             accessToken: 'test_token',
@@ -108,7 +109,7 @@ final class OAuth2ServiceTest extends TestCase
 
     public function testIssueTokenStopsAtFirstMatchingHandler(): void
     {
-        $request = new TokenRequest(grantType: 'refresh_token');
+        $request = new TokenRequest(grantType: GrantType::REFRESH_TOKEN);
 
         $tokenResponse = new TokenResponse(
             accessToken: 'test_token',

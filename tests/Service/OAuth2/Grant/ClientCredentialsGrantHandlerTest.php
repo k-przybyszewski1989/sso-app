@@ -6,6 +6,7 @@ namespace App\Tests\Service\OAuth2\Grant;
 
 use App\Entity\AccessToken;
 use App\Entity\OAuth2Client;
+use App\Enum\GrantType;
 use App\Exception\OAuth2\InvalidRequestException;
 use App\Exception\OAuth2\InvalidScopeException;
 use App\Exception\OAuth2\UnauthorizedClientException;
@@ -39,14 +40,14 @@ final class ClientCredentialsGrantHandlerTest extends TestCase
     public function testHandleSuccessfully(): void
     {
         $request = new TokenRequest(
-            grantType: 'client_credentials',
+            grantType: GrantType::CLIENT_CREDENTIALS,
             clientId: 'test_client',
             clientSecret: 'test_secret',
             scope: 'read write'
         );
 
         $client = new OAuth2Client('test_client', 'hashed_secret', 'Test Client');
-        $client->setGrantTypes(['client_credentials']);
+        $client->setGrantTypes([GrantType::CLIENT_CREDENTIALS]);
         $client->setAllowedScopes(['read', 'write', 'admin']);
 
         $expiresAt = new DateTimeImmutable('+1 hour');
@@ -88,14 +89,14 @@ final class ClientCredentialsGrantHandlerTest extends TestCase
     public function testHandleThrowsExceptionWhenClientNotAuthorizedForGrantType(): void
     {
         $request = new TokenRequest(
-            grantType: 'client_credentials',
+            grantType: GrantType::CLIENT_CREDENTIALS,
             clientId: 'test_client',
             clientSecret: 'test_secret',
             scope: 'read'
         );
 
         $client = new OAuth2Client('test_client', 'hashed_secret', 'Test Client');
-        $client->setGrantTypes(['authorization_code']);
+        $client->setGrantTypes([GrantType::AUTHORIZATION_CODE]);
 
         $clientAuthService = $this->createMock(ClientAuthenticationServiceInterface::class);
         $clientAuthService->expects($this->once())
@@ -120,13 +121,13 @@ final class ClientCredentialsGrantHandlerTest extends TestCase
     public function testHandleThrowsExceptionWhenScopeParameterMissing(): void
     {
         $request = new TokenRequest(
-            grantType: 'client_credentials',
+            grantType: GrantType::CLIENT_CREDENTIALS,
             clientId: 'test_client',
             clientSecret: 'test_secret'
         );
 
         $client = new OAuth2Client('test_client', 'hashed_secret', 'Test Client');
-        $client->setGrantTypes(['client_credentials']);
+        $client->setGrantTypes([GrantType::CLIENT_CREDENTIALS]);
 
         $clientAuthService = $this->createMock(ClientAuthenticationServiceInterface::class);
         $clientAuthService->expects($this->once())
@@ -151,14 +152,14 @@ final class ClientCredentialsGrantHandlerTest extends TestCase
     public function testHandleThrowsExceptionWhenInvalidScope(): void
     {
         $request = new TokenRequest(
-            grantType: 'client_credentials',
+            grantType: GrantType::CLIENT_CREDENTIALS,
             clientId: 'test_client',
             clientSecret: 'test_secret',
             scope: 'read invalid_scope'
         );
 
         $client = new OAuth2Client('test_client', 'hashed_secret', 'Test Client');
-        $client->setGrantTypes(['client_credentials']);
+        $client->setGrantTypes([GrantType::CLIENT_CREDENTIALS]);
         $client->setAllowedScopes(['read', 'write']);
 
         $clientAuthService = $this->createMock(ClientAuthenticationServiceInterface::class);

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Enum\GrantType;
 use App\Request\OAuth2\CreateClientRequest;
 use App\Request\ParamConverter\RequestTransform;
 use App\Service\OAuth2\ClientManagementServiceInterface;
@@ -34,7 +35,7 @@ final class ClientController extends AbstractController
                 'name' => $client->getName(),
                 'description' => $client->getDescription(),
                 'redirect_uris' => $client->getRedirectUris(),
-                'grant_types' => $client->getGrantTypes(),
+                'grant_types' => GrantType::toStringArray($client->getGrantTypes()),
                 'allowed_scopes' => $client->getAllowedScopes(),
                 'confidential' => $client->isConfidential(),
                 'active' => $client->isActive(),
