@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Service\OAuth2;
 
 use App\Entity\OAuth2Client;
+use App\Enum\GrantType;
 
 interface ClientManagementServiceInterface
 {
@@ -13,7 +14,7 @@ interface ClientManagementServiceInterface
      *
      * @param string $name Client application name
      * @param array<string> $redirectUris Allowed redirect URIs
-     * @param array<string> $grantTypes Allowed grant types
+     * @param array<GrantType> $grantTypes Allowed grant types
      * @param bool $confidential Whether client is confidential (requires secret)
      * @return array{client_id: string, client_secret: string, name: string} Client credentials
      */

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service\OAuth2;
 
+use App\Enum\GrantType;
 use App\Exception\OAuth2\UnsupportedGrantTypeException;
 use App\Request\OAuth2\TokenRequest;
 use App\Response\OAuth2\TokenResponse;
@@ -33,13 +34,13 @@ final readonly class OAuth2Service implements OAuth2ServiceInterface
     public function issueToken(TokenRequest $request): TokenResponse
     {
         foreach ($this->grantHandlers as $handler) {
-            if ($handler->supports($request->grantType)) {
+            if ($handler->supports($request->grantType->value)) {
                 return $handler->handle($request);
             }
         }
 
         throw new UnsupportedGrantTypeException(
-            sprintf('Grant type "%s" is not supported', $request->grantType)
+            sprintf('Grant type "%s" is not supported', $request->grantType->value)
         );
     }
 }

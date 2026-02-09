@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Service\OAuth2;
 
 use App\Entity\OAuth2Client;
+use App\Enum\GrantType;
 use App\Exception\EntityNotFoundException;
 use App\Repository\OAuth2ClientRepositoryInterface;
 use Psr\Log\LoggerInterface;
@@ -38,7 +39,7 @@ final readonly class ClientManagementService implements ClientManagementServiceI
 
         // Set client properties
         $client->setRedirectUris($redirectUris);
-        $client->setGrantTypes($grantTypes);
+        $client->setGrantTypes(GrantType::toStringArray($grantTypes));
         $client->setConfidential($confidential);
 
         // Persist client
@@ -48,7 +49,7 @@ final readonly class ClientManagementService implements ClientManagementServiceI
             'clientId' => $clientId,
             'name' => $name,
             'confidential' => $confidential,
-            'grantTypes' => $grantTypes,
+            'grantTypes' => GrantType::toStringArray($grantTypes),
         ]);
 
         // Return client credentials (client_secret is only shown once)
