@@ -8,6 +8,7 @@ use App\Entity\AccessToken;
 use App\Entity\OAuth2Client;
 use App\Entity\RefreshToken;
 use App\Entity\User;
+use App\Enum\GrantType;
 use App\Exception\OAuth2\InvalidRequestException;
 use App\Exception\OAuth2\InvalidScopeException;
 use App\Exception\OAuth2\UnauthorizedClientException;
@@ -41,7 +42,7 @@ final class RefreshTokenGrantHandlerTest extends TestCase
     public function testHandleSuccessfullyWithSameScopes(): void
     {
         $request = new TokenRequest(
-            grantType: 'refresh_token',
+            grantType: GrantType::REFRESH_TOKEN,
             refreshToken: 'old_refresh_token',
             clientId: 'test_client',
             clientSecret: 'test_secret'
@@ -101,7 +102,7 @@ final class RefreshTokenGrantHandlerTest extends TestCase
     public function testHandleSuccessfullyWithNarrowedScopes(): void
     {
         $request = new TokenRequest(
-            grantType: 'refresh_token',
+            grantType: GrantType::REFRESH_TOKEN,
             refreshToken: 'old_refresh_token',
             clientId: 'test_client',
             clientSecret: 'test_secret',
@@ -154,7 +155,7 @@ final class RefreshTokenGrantHandlerTest extends TestCase
     public function testHandleThrowsExceptionWhenClientNotAuthorizedForGrantType(): void
     {
         $request = new TokenRequest(
-            grantType: 'refresh_token',
+            grantType: GrantType::REFRESH_TOKEN,
             refreshToken: 'old_refresh_token',
             clientId: 'test_client',
             clientSecret: 'test_secret'
@@ -186,7 +187,7 @@ final class RefreshTokenGrantHandlerTest extends TestCase
     public function testHandleThrowsExceptionWhenRefreshTokenMissing(): void
     {
         $request = new TokenRequest(
-            grantType: 'refresh_token',
+            grantType: GrantType::REFRESH_TOKEN,
             clientId: 'test_client',
             clientSecret: 'test_secret'
         );
@@ -217,7 +218,7 @@ final class RefreshTokenGrantHandlerTest extends TestCase
     public function testHandleThrowsExceptionWhenRequestedScopesExceedOriginal(): void
     {
         $request = new TokenRequest(
-            grantType: 'refresh_token',
+            grantType: GrantType::REFRESH_TOKEN,
             refreshToken: 'old_refresh_token',
             clientId: 'test_client',
             clientSecret: 'test_secret',

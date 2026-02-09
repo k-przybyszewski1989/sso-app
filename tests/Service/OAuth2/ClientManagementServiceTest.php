@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Service\OAuth2;
 
 use App\Entity\OAuth2Client;
+use App\Enum\GrantType;
 use App\Exception\EntityNotFoundException;
 use App\Repository\OAuth2ClientRepositoryInterface;
 use App\Service\OAuth2\ClientManagementService;
@@ -72,7 +73,7 @@ final class ClientManagementServiceTest extends TestCase
         $result = $service->createClient(
             'Test Client',
             ['https://example.com/callback'],
-            ['authorization_code'],
+            [GrantType::AUTHORIZATION_CODE],
             true
         );
 
@@ -96,13 +97,13 @@ final class ClientManagementServiceTest extends TestCase
         $passwordHasher->method('hashPassword')->willReturn('hashed');
 
         $redirectUris = ['https://app.example.com/callback', 'https://app.example.com/redirect'];
-        $grantTypes = ['authorization_code', 'refresh_token'];
+        $grantTypes = [GrantType::AUTHORIZATION_CODE, GrantType::REFRESH_TOKEN];
 
         $clientRepository->expects($this->once())
             ->method('save')
             ->with($this->callback(function (OAuth2Client $client) use ($redirectUris, $grantTypes) {
                 $this->assertEquals($redirectUris, $client->getRedirectUris());
-                $this->assertEquals($grantTypes, $client->getGrantTypes());
+                $this->assertEquals(GrantType::toStringArray($grantTypes), $client->getGrantTypes());
                 $this->assertFalse($client->isConfidential());
 
                 return true;

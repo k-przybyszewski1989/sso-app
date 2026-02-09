@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Service\OAuth2;
 
-use App\Enum\GrantType;
 use App\Exception\OAuth2\UnsupportedGrantTypeException;
 use App\Request\OAuth2\TokenRequest;
 use App\Response\OAuth2\TokenResponse;

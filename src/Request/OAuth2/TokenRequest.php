@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Request\OAuth2;
 
 use App\Enum\GrantType;
-use Symfony\Component\Validator\Constraints as Assert;
 
 final readonly class TokenRequest
 {

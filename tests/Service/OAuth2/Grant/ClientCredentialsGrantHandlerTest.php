@@ -6,6 +6,7 @@ namespace App\Tests\Service\OAuth2\Grant;
 
 use App\Entity\AccessToken;
 use App\Entity\OAuth2Client;
+use App\Enum\GrantType;
 use App\Exception\OAuth2\InvalidRequestException;
 use App\Exception\OAuth2\InvalidScopeException;
 use App\Exception\OAuth2\UnauthorizedClientException;
@@ -39,7 +40,7 @@ final class ClientCredentialsGrantHandlerTest extends TestCase
     public function testHandleSuccessfully(): void
     {
         $request = new TokenRequest(
-            grantType: 'client_credentials',
+            grantType: GrantType::CLIENT_CREDENTIALS,
             clientId: 'test_client',
             clientSecret: 'test_secret',
             scope: 'read write'
@@ -88,7 +89,7 @@ final class ClientCredentialsGrantHandlerTest extends TestCase
     public function testHandleThrowsExceptionWhenClientNotAuthorizedForGrantType(): void
     {
         $request = new TokenRequest(
-            grantType: 'client_credentials',
+            grantType: GrantType::CLIENT_CREDENTIALS,
             clientId: 'test_client',
             clientSecret: 'test_secret',
             scope: 'read'
@@ -120,7 +121,7 @@ final class ClientCredentialsGrantHandlerTest extends TestCase
     public function testHandleThrowsExceptionWhenScopeParameterMissing(): void
     {
         $request = new TokenRequest(
-            grantType: 'client_credentials',
+            grantType: GrantType::CLIENT_CREDENTIALS,
             clientId: 'test_client',
             clientSecret: 'test_secret'
         );
@@ -151,7 +152,7 @@ final class ClientCredentialsGrantHandlerTest extends TestCase
     public function testHandleThrowsExceptionWhenInvalidScope(): void
     {
         $request = new TokenRequest(
-            grantType: 'client_credentials',
+            grantType: GrantType::CLIENT_CREDENTIALS,
             clientId: 'test_client',
             clientSecret: 'test_secret',
             scope: 'read invalid_scope'
