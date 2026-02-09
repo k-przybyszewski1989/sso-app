@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service\OAuth2\Grant;
 
+use App\Enum\GrantType;
 use App\Exception\OAuth2\InvalidRequestException;
 use App\Exception\OAuth2\InvalidScopeException;
 use App\Exception\OAuth2\UnauthorizedClientException;
@@ -15,7 +16,7 @@ use App\Service\OAuth2\RefreshTokenServiceInterface;
 
 final readonly class RefreshTokenGrantHandler implements GrantHandlerInterface
 {
-    private const string GRANT_TYPE = 'refresh_token';
+    private const string GRANT_TYPE = GrantType::REFRESH_TOKEN->value;
 
     public function __construct(
         private ClientAuthenticationServiceInterface $clientAuthenticationService,
